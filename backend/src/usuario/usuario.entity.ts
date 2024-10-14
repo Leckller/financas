@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import TransacaoEntity from "src/transacao/transacao.entity";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export default class UsuarioEntity {
@@ -14,5 +15,8 @@ export default class UsuarioEntity {
 
     @Column({})
     senha: string;
+
+    @OneToMany(() => TransacaoEntity, (transacaoEntity) => transacaoEntity)
+    transactions: TransacaoEntity[];
 
 }

@@ -1,3 +1,5 @@
+import CategoriaEntity from "src/categorias/categoria.entity";
+import UsuarioEntity from "src/usuario/usuario.entity";
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
@@ -12,8 +14,8 @@ export default class TransacaoEntity {
     @Column()
     valor: number;
 
-    // @OneToOne()
-    // categoria: Categoria;
+    @OneToOne(() => CategoriaEntity)
+    categoria: CategoriaEntity;
     
     @CreateDateColumn({})
     data: Date;
@@ -21,7 +23,7 @@ export default class TransacaoEntity {
     @Column({})
     descricao: string;
 
-    // @ManyToOne()
-    // user: User;
+    @ManyToOne(() => UsuarioEntity, (usuarioEntity) => usuarioEntity)
+    user: UsuarioEntity;
 
 }
