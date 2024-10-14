@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export default class TransacaoEntity {
@@ -9,6 +9,19 @@ export default class TransacaoEntity {
     @Column({default: 'despesa',})
     tipo: string;
 
+    @Column()
+    valor: number;
 
+    // @OneToOne()
+    // categoria: Categoria;
+    
+    @CreateDateColumn({})
+    data: Date;
+
+    @Column({})
+    descricao: string;
+
+    // @ManyToOne()
+    // user: User;
 
 }
