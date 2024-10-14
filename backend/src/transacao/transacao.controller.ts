@@ -1,10 +1,25 @@
-import { Controller } from "@nestjs/common";
+import { Controller, Post, UseGuards } from "@nestjs/common";
+import AuthGuard from "src/guard/auth.guard";
+import TransacaoService from "./transacao.service";
 
+@UseGuards(AuthGuard)
 @Controller('transaction')
 export default class TransacaoController {
 
-    public async Receita () {}
+    constructor(private readonly transacaoService: TransacaoService) {}
 
-    public async Despesa () {}
+    @Post('/receita')
+    public async Receita () {
+
+        return this.transacaoService.createReceita();
+
+    }
+
+    @Post('/despesa')
+    public async Despesa () {
+
+        return this.transacaoService.createDespesa();
+
+    }
 
 }
