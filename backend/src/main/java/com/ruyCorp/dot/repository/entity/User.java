@@ -20,6 +20,9 @@ public class User implements UserDetails {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
+  private Double budget;
+  private Double balance;
+
   @Column(unique = true)
   private String email;
   private String name;
@@ -33,6 +36,9 @@ public class User implements UserDetails {
   private Date createdAt;
   @UpdateTimestamp
   private Date updatedAt;
+
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+  List<Transaction> transactions;
 
   public User() {}
 
