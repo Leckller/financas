@@ -14,7 +14,8 @@ public class Transaction {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
-  TransactionType type = TransactionType.addTransaction("despesa");
+  // Despesa ou receita.
+  String type;
   Double value;
 
   @ManyToOne(optional = false)
@@ -34,16 +35,14 @@ public class Transaction {
 
   public void setValue(Double value) { this.value = value; }
 
-  public TransactionType getType() { return type; }
-
-  public void setType(TransactionType type) { this.type = type; }
+  public String getType() { return type; }
 
   public User getUser() { return user; }
 
   public void setUser(User user) { this.user = user; }
 
   // Deve receber uma string de valor "despesa" ou "receita".
-  public void setType(String type) { this.type.setType(type); }
+  public void setType(String type) { this.type = type; }
 
   public Transaction (TransactionDto transactionDto) {
     this.setType(transactionDto.type());

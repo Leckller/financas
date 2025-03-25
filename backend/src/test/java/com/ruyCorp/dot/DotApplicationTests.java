@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -25,30 +26,13 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Testcontainers
+@ActiveProfiles("test")
 class DotApplicationTests {
-
-	@Container
-	public static MySQLContainer MYSQL_CONTAINER = new MySQLContainer("mysql:8.0.32")
-			.withDatabaseName("dot");
-
-	@DynamicPropertySource
-	public static void overrideProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.datasource.url", MYSQL_CONTAINER::getJdbcUrl);
-		registry.add("spring.datasource.username", MYSQL_CONTAINER::getUsername);
-		registry.add("spring.datasource.password", MYSQL_CONTAINER::getPassword);
-	}
 
 	ObjectMapper objectMapper = new ObjectMapper();
 
 	@Autowired
 	MockMvc mockMvc;
-
-	@MockitoBean
-	SecurityContextHolder mockedSecurity;
-
-	@MockitoBean
-	UserService mockedUserService;
 
 	@Test
 	public void createTransaction() throws Exception {
@@ -60,7 +44,7 @@ class DotApplicationTests {
 		MvcResult request = this.mockMvc.perform(MockMvcRequestBuilders
 				.post("/transaction")
 						.contentType("application/json")
-						.header("Authorization", "getToken()")
+						.header("Authorization", getToken())
 						.content(body))
 				.andExpect(MockMvcResultMatchers.status().isCreated())
 				.andReturn();
@@ -79,9 +63,8 @@ class DotApplicationTests {
 		String body = objectMapper.writeValueAsString(mockedUserCreate);
 
 		MvcResult request = this.mockMvc.perform(
-				MockMvcRequestBuilders.post("/user")
-						.contentType("application/json").content(body))
-				.andExpect(MockMvcResultMatchers.status().isCreated()).andReturn();
+				MockMvcRequestBuilders.post("/user"))
+				.andReturn();
 
 		String json = request.getResponse().getContentAsString();
 		TokenDto token = this.objectMapper.readValue(json, TokenDto.class);

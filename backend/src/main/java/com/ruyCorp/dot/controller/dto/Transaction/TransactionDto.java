@@ -17,7 +17,7 @@ public record TransactionDto (
 
   public static TransactionDto fromEntity(Transaction transaction) {
     return new TransactionDto(
-        transaction.getType().getType(),
+        transaction.getType(),
         transaction.getValue()
     );
   }
