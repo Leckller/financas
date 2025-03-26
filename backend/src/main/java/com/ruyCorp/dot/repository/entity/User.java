@@ -20,7 +20,9 @@ public class User implements UserDetails {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
+  // Orçamento
   private Double budget;
+  // Saldo
   private Double balance;
 
   @Column(unique = true)
@@ -47,6 +49,38 @@ public class User implements UserDetails {
     this.email = userCreationDto.email();
     this.password = userCreationDto.password();
     this.username = userCreationDto.username();
+  }
+
+  public Double getBudget() {
+    return budget;
+  }
+
+  public void setBudget(Double budget) {
+    this.budget = budget;
+  }
+
+  public Double getBalance() {
+    return balance;
+  }
+
+  public void incrementBalance(Double value) {
+    this.balance += value;
+  }
+
+  public void decrementBalance(Double value) {
+    this.balance -= value;
+  }
+
+  public void setBalance(Double balance) {
+    this.balance = balance;
+  }
+
+  public List<Transaction> getTransactions() {
+    return transactions;
+  }
+
+  public void setTransactions(List<Transaction> transactions) {
+    this.transactions = transactions;
   }
 
   public Integer getId() {

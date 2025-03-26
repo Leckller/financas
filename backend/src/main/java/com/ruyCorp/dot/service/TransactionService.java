@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class TransactionService {
@@ -35,13 +36,19 @@ public class TransactionService {
   public Transaction newTransaction(String username, TransactionDto dto)
       throws InvalidFieldsException {
 
-    if (dto.type() != "receita" && dto.type() != "despesa") {
+    if (!Objects.equals(dto.type(), "receita") && !Objects.equals(dto.type(), "despesa")) {
       throw new InvalidFieldsException("A transação só pode ser do tipo despesa ou receita.");
     }
 
     Transaction transaction = new Transaction(dto);
 
     User user = this.userService.findByUsername(username);
+
+    if(dto.type().equals("receita")) {
+      user.incrementBalance(dto.amount());
+    } else {
+      user.decrementBalance(dto.amount());
+    }
 
     transaction.setUser(user);
 

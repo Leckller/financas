@@ -1,8 +1,11 @@
 package com.ruyCorp.dot.controller;
 
 import com.ruyCorp.dot.controller.dto.Transaction.TransactionDto;
+import com.ruyCorp.dot.controller.dto.Transaction.TransactionListDto;
 import com.ruyCorp.dot.repository.entity.Transaction;
+import com.ruyCorp.dot.repository.entity.User;
 import com.ruyCorp.dot.service.TransactionService;
+import com.ruyCorp.dot.service.UserService;
 import com.ruyCorp.dot.service.exception.InvalidFieldsException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,24 +21,27 @@ import java.util.List;
 public class TransactionController {
 
   private final TransactionService transactionService;
+  private final UserService userService;
 
   @Autowired
-  public TransactionController(TransactionService transactionService) {
+  public TransactionController(TransactionService transactionService, UserService userService) {
     this.transactionService = transactionService;
+    this.userService = userService;
   }
 
   // Tem q criar uma lógica para verificar pelo tempo
   @GetMapping
-  public ResponseEntity<List<TransactionDto>> listTransactions () {
+  public ResponseEntity<TransactionListDto> listTransactions () {
 
     String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
     // !!!!!! provisório.
     List<Transaction> transactions = this.transactionService.getTransactions(username, 0);
+    User user = this.userService.findByUsername(username);
 
     return ResponseEntity
         .status(HttpStatus.OK)
-        .body(transactions.stream().map(TransactionDto::fromEntity).toList());
+        .body(TransactionListDto.fromEntity(user.getBalance(), transactions));
   }
 
   @PostMapping

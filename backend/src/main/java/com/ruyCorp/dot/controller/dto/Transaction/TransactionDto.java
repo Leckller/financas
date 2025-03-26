@@ -11,14 +11,18 @@ public record TransactionDto (
   String type,
 
   @JsonProperty("amount")
-  Double amount
+  Double amount,
+
+  @JsonProperty("balance")
+  Double balance
 
 ) {
 
   public static TransactionDto fromEntity(Transaction transaction) {
     return new TransactionDto(
         transaction.getType(),
-        transaction.getAmount()
+        transaction.getAmount(),
+        transaction.getUser().getBalance()
     );
   }
 

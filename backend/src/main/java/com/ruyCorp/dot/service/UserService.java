@@ -35,6 +35,8 @@ public class UserService implements UserDetailsService {
     user.setUsername(userCreationDto.username());
     user.setEmail(userCreationDto.email());
     user.setPassword(hashedPassword);
+    user.setBudget(userCreationDto.budget());
+    user.setBalance(userCreationDto.budget());
 
     return this.userRepository.save(user);
 
