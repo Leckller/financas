@@ -16,7 +16,7 @@ public class Transaction {
 
   // Despesa ou receita.
   String type;
-  Double value;
+  Double amount;
 
   @ManyToOne(optional = false)
   @JoinColumn(name = "user_id")
@@ -30,10 +30,25 @@ public class Transaction {
   )
   private List<Tag> tags;
 
+  public Integer getId() {
+    return id;
+  }
 
-  public Double getValue() { return value; }
+  public void setId(Integer id) {
+    this.id = id;
+  }
 
-  public void setValue(Double value) { this.value = value; }
+  public List<Tag> getTags() {
+    return tags;
+  }
+
+  public void setTags(List<Tag> tags) {
+    this.tags = tags;
+  }
+
+  public Double getAmount() { return amount; }
+
+  public void setAmount(Double value) { this.amount = value; }
 
   public String getType() { return type; }
 
@@ -46,7 +61,7 @@ public class Transaction {
 
   public Transaction (TransactionDto transactionDto) {
     this.setType(transactionDto.type());
-    this.setValue(transactionDto.value());
+    this.setAmount(transactionDto.amount());
   }
 
 }

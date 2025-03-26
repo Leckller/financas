@@ -10,15 +10,15 @@ public record TransactionDto (
   @JsonProperty("type")
   String type,
 
-  @JsonProperty("value")
-  Double value
+  @JsonProperty("amount")
+  Double amount
 
 ) {
 
   public static TransactionDto fromEntity(Transaction transaction) {
     return new TransactionDto(
         transaction.getType(),
-        transaction.getValue()
+        transaction.getAmount()
     );
   }
 

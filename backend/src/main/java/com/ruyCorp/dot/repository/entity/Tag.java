@@ -14,7 +14,7 @@ public class Tag {
 
   private String name;
 
-  @ManyToOne(optional = true)
+  @ManyToOne(optional = false)
   @JoinColumn(name = "user_id")
   private User user;
 
