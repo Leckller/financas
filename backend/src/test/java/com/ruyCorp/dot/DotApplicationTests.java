@@ -41,10 +41,12 @@ class DotApplicationTests {
 
 		String body = this.objectMapper.writeValueAsString(mockedTransact);
 
-		MvcResult request = this.mockMvc.perform(MockMvcRequestBuilders
+    String token = this.getToken();
+
+		MvcResult request = mockMvc.perform(MockMvcRequestBuilders
 				.post("/transaction")
 						.contentType("application/json")
-						.header("Authorization", getToken())
+            .header("Authorization", token)
 						.content(body))
 				.andExpect(MockMvcResultMatchers.status().isCreated())
 				.andReturn();
@@ -63,7 +65,9 @@ class DotApplicationTests {
 		String body = objectMapper.writeValueAsString(mockedUserCreate);
 
 		MvcResult request = this.mockMvc.perform(
-				MockMvcRequestBuilders.post("/user"))
+				MockMvcRequestBuilders.post("/user")
+            .contentType("application/json")
+            .content(body))
 				.andReturn();
 
 		String json = request.getResponse().getContentAsString();
