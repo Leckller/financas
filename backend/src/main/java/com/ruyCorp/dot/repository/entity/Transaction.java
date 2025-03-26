@@ -30,6 +30,8 @@ public class Transaction {
   )
   private List<Tag> tags;
 
+  public Transaction() {}
+
   public Integer getId() {
     return id;
   }

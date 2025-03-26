@@ -4,6 +4,7 @@ import com.ruyCorp.dot.controller.dto.Transaction.TransactionDto;
 import com.ruyCorp.dot.repository.TransactionRepository;
 import com.ruyCorp.dot.repository.entity.Transaction;
 import com.ruyCorp.dot.repository.entity.User;
+import com.ruyCorp.dot.service.exception.InvalidFieldsException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -31,9 +32,14 @@ public class TransactionService {
 
   }
 
-  public Transaction newTransaction(String username, TransactionDto transactionDto) {
+  public Transaction newTransaction(String username, TransactionDto dto)
+      throws InvalidFieldsException {
 
-    Transaction transaction = new Transaction(transactionDto);
+    if (dto.type() != "receita" && dto.type() != "despesa") {
+      throw new InvalidFieldsException("A transação só pode ser do tipo despesa ou receita.");
+    }
+
+    Transaction transaction = new Transaction(dto);
 
     User user = this.userService.findByUsername(username);
 

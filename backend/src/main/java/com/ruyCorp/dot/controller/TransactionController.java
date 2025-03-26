@@ -3,6 +3,7 @@ package com.ruyCorp.dot.controller;
 import com.ruyCorp.dot.controller.dto.Transaction.TransactionDto;
 import com.ruyCorp.dot.repository.entity.Transaction;
 import com.ruyCorp.dot.service.TransactionService;
+import com.ruyCorp.dot.service.exception.InvalidFieldsException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -39,7 +40,7 @@ public class TransactionController {
 
   @PostMapping
   public ResponseEntity<TransactionDto> newTransaction(
-      @Valid @RequestBody TransactionDto dto) {
+      @Valid @RequestBody TransactionDto dto) throws InvalidFieldsException {
 
     String username = SecurityContextHolder.getContext().getAuthentication().getName();
     Transaction transaction = this.transactionService.newTransaction(username, dto);
