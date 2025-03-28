@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class UserException {
 
-  ObjectMapper  objectMapper;
+  ObjectMapper  objectMapper = new ObjectMapper();
 
   @Autowired
   MockMvc mockMvc;
@@ -69,10 +69,11 @@ public class UserException {
     MvcResult budgetRequest = this.UserPostRequest(badBudget);
     MvcResult emailRequest = this.UserPostRequest(badEmail);
 
-    assertEquals(403, passwordRequest.getResponse().getStatus());
-    assertEquals(403, emptyRequest.getResponse().getStatus());
-    assertEquals(403, budgetRequest.getResponse().getStatus());
-    assertEquals(403, emailRequest.getResponse().getStatus());
+    // Só preciso verificar o status, as mensagens são da biblioteca e já são testadas
+    assertEquals(400, passwordRequest.getResponse().getStatus());
+    assertEquals(400, emptyRequest.getResponse().getStatus());
+    assertEquals(400, budgetRequest.getResponse().getStatus());
+    assertEquals(400, emailRequest.getResponse().getStatus());
 
   }
 

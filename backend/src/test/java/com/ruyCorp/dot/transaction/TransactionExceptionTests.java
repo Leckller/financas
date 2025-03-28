@@ -1,11 +1,7 @@
 package com.ruyCorp.dot.transaction;
 
-import com.ruyCorp.dot.controller.dto.TokenDto;
 import com.ruyCorp.dot.controller.dto.Transaction.TransactionCreationDto;
-import com.ruyCorp.dot.controller.dto.Transaction.TransactionDto;
-import com.ruyCorp.dot.controller.dto.User.UserCreationDto;
 import com.ruyCorp.dot.service.exception.MessageDto;
-import com.ruyCorp.dot.utils.CreateUser;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
