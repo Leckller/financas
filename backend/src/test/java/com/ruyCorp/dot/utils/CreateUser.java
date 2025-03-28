@@ -17,16 +17,61 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 @ActiveProfiles("test")
 public class CreateUser {
 
-  @DisplayName("Cria um novo usuário")
-  public static String createUserRequest(MockMvc mockMvc) throws Exception {
-    ObjectMapper  objectMapper = new ObjectMapper();
-    UserCreationDto mockedUserCreate = new UserCreationDto(
+  public static UserCreationDto badPassword() {
+    return new UserCreationDto(
+        "teste",
+        "user-test",
+        "teste@teste.com",
+        1500d,
+        "bad"
+    );
+  }
+
+  public static UserCreationDto badEmail() {
+    return new UserCreationDto(
+        "teste",
+        "user-test",
+        "invalidEmail",
+        1500d,
+        "goodPassword"
+    );
+  }
+
+  public static UserCreationDto badBudget() {
+    return new UserCreationDto(
+        "teste",
+        "user-test",
+        "teste@teste.com",
+        -1500d,
+        "goodPassword"
+    );
+  }
+
+  public static UserCreationDto emptyJsonValues() {
+    return new UserCreationDto(
+        "",
+        "",
+        "",
+        null,
+        ""
+    );
+  }
+
+  public static UserCreationDto validUser() {
+    return new UserCreationDto(
         "teste",
         "user-test",
         "teste@teste.com",
         1500d,
         "goodPassword"
     );
+
+  }
+
+  @DisplayName("Cria um novo usuário")
+  public static String createUserRequest(MockMvc mockMvc) throws Exception {
+    ObjectMapper  objectMapper = new ObjectMapper();
+    UserCreationDto mockedUserCreate = validUser();
 
     String body = objectMapper.writeValueAsString(mockedUserCreate);
 
