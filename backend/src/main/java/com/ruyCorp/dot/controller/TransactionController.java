@@ -7,6 +7,7 @@ import com.ruyCorp.dot.repository.entity.User;
 import com.ruyCorp.dot.service.TransactionService;
 import com.ruyCorp.dot.service.UserService;
 import com.ruyCorp.dot.service.exception.InvalidFieldsException;
+import com.ruyCorp.dot.service.exception.NoPermissionException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,7 +37,7 @@ public class TransactionController {
     String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
     // !!!!!! provisório.
-    List<Transaction> transactions = this.transactionService.getTransactions(username, 0);
+    List<Transaction> transactions = this.transactionService.listTransactions(username, 0);
     User user = this.userService.findByUsername(username);
 
     return ResponseEntity
@@ -54,6 +55,18 @@ public class TransactionController {
     return ResponseEntity
         .status(HttpStatus.CREATED)
         .body(TransactionDto.fromEntity(transaction));
+
+  }
+
+  @DeleteMapping("{id}")
+  public ResponseEntity deleteTransaction(@PathVariable Integer id)
+      throws NoPermissionException {
+
+    String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+    this.transactionService.deleteTransaction(id, username);
+
+    return ResponseEntity.status(HttpStatus.OK).build();
 
   }
 
