@@ -2,9 +2,7 @@ package com.ruyCorp.dot.controller.dto.User;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record UserCreationDto(
@@ -23,6 +21,11 @@ public record UserCreationDto(
     @Size(max = 100, message = "O seu email não pode ter mais que 100 letras.")
     @JsonProperty("email")
     String email,
+
+    @NotNull(message = "O orçamento é obrigatório")
+    @Positive(message = "Seu orçamento não pode ser negativo.")
+    @JsonProperty("budget")
+    Double budget,
 
     @Size(min=8, message="A senha deve ter pelo menos 8 caracteres")
     @NotBlank(message="A senha é obrigatória")

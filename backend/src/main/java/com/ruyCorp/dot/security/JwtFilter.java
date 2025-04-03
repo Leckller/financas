@@ -1,7 +1,7 @@
 package com.ruyCorp.dot.security;
 
-import com.backend.makeUrTasks.makeUrTasks.service.TokenService;
-import com.backend.makeUrTasks.makeUrTasks.service.UserService;
+import com.ruyCorp.dot.service.TokenService;
+import com.ruyCorp.dot.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

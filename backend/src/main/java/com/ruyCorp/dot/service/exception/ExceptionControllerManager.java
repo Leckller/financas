@@ -4,6 +4,7 @@ import com.ruyCorp.dot.service.exception.AlreadyExists.AlreadyExistsException;
 import com.ruyCorp.dot.service.exception.NotFound.NotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -26,15 +27,20 @@ public class ExceptionControllerManager {
   }
 
   @ExceptionHandler()
+  public ResponseEntity<MessageDto> handleInvalidFields(BadRequestException exception) {
+    return ResponseEntity
+        .status(HttpStatus.BAD_REQUEST)
+        .body(new MessageDto(exception.getMessage()));
+  }
+
+  @ExceptionHandler()
   public ResponseEntity<MessageDto> handleAlreadyExists(AlreadyExistsException exception) {
     return ResponseEntity
         .status(HttpStatus.FORBIDDEN)
         .body(new MessageDto(exception.getMessage()));
   }
 
-
   @ExceptionHandler(ConstraintViolationException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ResponseEntity<Map<String, String>> handleConstraintViolationError(ConstraintViolationException exception) {
     Map<String, String> errors = new HashMap<>();
     for (ConstraintViolation<?> violation : exception.getConstraintViolations()) {
