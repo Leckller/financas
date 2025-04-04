@@ -46,12 +46,6 @@ public class TransactionService {
 
     User user = this.userService.findByUsername(username);
 
-    if(dto.type().equals("receita")) {
-      user.incrementBalance(dto.amount());
-    } else {
-      user.decrementBalance(dto.amount());
-    }
-
     transaction.setUser(user);
 
     return this.transactionRepository.save(transaction);
@@ -63,15 +57,38 @@ public class TransactionService {
         .orElseThrow(TransactionNotFoundException::new);
   }
 
+  public Transaction editTransaction(
+      TransactionDto dto, Integer id, String username) throws NoPermissionException {
+
+    Transaction transaction = getTransactionById(id);
+    User user = this.userService.findByUsername(username);
+
+    this.userHavePermission(user, transaction);
+
+    if(dto.amount() != null) {
+      transaction.setAmount(dto.amount());
+    }
+    if(dto.type() != null) {
+      transaction.setType(dto.type());
+    }
+
+    return null;
+
+  }
+
+  public void userHavePermission(User user, Transaction transaction) throws NoPermissionException {
+    if(!Objects.equals(transaction.getUser().getId(), user.getId())) {
+      throw new NoPermissionException();
+    }
+  }
+
   public void deleteTransaction(Integer id, String username) throws NoPermissionException {
 
     User user = this.userService.findByUsername(username);
 
     Transaction transaction = this.getTransactionById(id);
 
-    if(!Objects.equals(transaction.getUser().getId(), user.getId())) {
-      throw new NoPermissionException();
-    }
+    this.userHavePermission(user, transaction);
 
     if(transaction.getType().equals("receita")) {
       user.decrementBalance(-Math.abs(transaction.getAmount()));

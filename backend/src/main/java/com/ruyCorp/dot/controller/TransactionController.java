@@ -58,6 +58,16 @@ public class TransactionController {
 
   }
 
+  @PatchMapping("{id}")
+  public ResponseEntity<TransactionDto> editTransaction(
+      @Valid @RequestBody TransactionDto dto, @PathVariable Integer id) {
+
+    String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+
+    return null;
+  }
+
   @DeleteMapping("{id}")
   public ResponseEntity deleteTransaction(@PathVariable Integer id)
       throws NoPermissionException {

@@ -2,6 +2,7 @@ package com.ruyCorp.dot.repository.entity;
 
 import com.ruyCorp.dot.controller.dto.User.UserCreationDto;
 import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
@@ -12,6 +13,10 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
@@ -21,17 +26,23 @@ public class User implements UserDetails {
   private Integer id;
 
   // Orçamento
+  @Getter
   private Double budget;
   // Saldo
+  @Getter
   private Double balance;
 
+  @Getter
   @Column(unique = true)
   private String email;
+  @Getter
   private String name;
+  @Getter
   private String role = "USER";
 
   @Column(unique = true)
   private String username;
+  @Getter
   private String password;
 
   @CreationTimestamp
@@ -39,6 +50,7 @@ public class User implements UserDetails {
   @UpdateTimestamp
   private Date updatedAt;
 
+  @Getter
   @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
   List<Transaction> transactions;
 
@@ -51,18 +63,6 @@ public class User implements UserDetails {
     this.username = userCreationDto.username();
   }
 
-  public Double getBudget() {
-    return budget;
-  }
-
-  public void setBudget(Double budget) {
-    this.budget = budget;
-  }
-
-  public Double getBalance() {
-    return balance;
-  }
-
   public void incrementBalance(Double value) {
     this.balance += value;
   }
@@ -71,77 +71,9 @@ public class User implements UserDetails {
     this.balance -= value;
   }
 
-  public void setBalance(Double balance) {
-    this.balance = balance;
-  }
-
-  public List<Transaction> getTransactions() {
-    return transactions;
-  }
-
-  public void setTransactions(List<Transaction> transactions) {
-    this.transactions = transactions;
-  }
-
-  public Integer getId() {
-    return id;
-  }
-
-  public void setId(Integer id) {
-    this.id = id;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getRole() {
-    return role;
-  }
-
-  public void setRole(String role) {
-    this.role = role;
-  }
-
-  public String getEmail() {
-    return email;
-  }
-
-  public void setEmail(String email) {
-    this.email = email;
-  }
-
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     return List.of(new SimpleGrantedAuthority(role));
-  }
-
-  public String getPassword() {
-    return password;
-  }
-
-  public void setUsername(String username) {
-    this.username = username;
-  }
-
-  public Date getCreatedAt() {
-    return createdAt;
-  }
-
-  public void setCreatedAt(Date createdAt) {
-    this.createdAt = createdAt;
-  }
-
-  public Date getUpdatedAt() {
-    return updatedAt;
-  }
-
-  public void setUpdatedAt(Date updatedAt) {
-    this.updatedAt = updatedAt;
   }
 
   @Override
@@ -169,7 +101,4 @@ public class User implements UserDetails {
     return true;
   }
 
-  public void setPassword(String password) {
-    this.password = password;
-  }
 }
