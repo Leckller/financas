@@ -12,10 +12,7 @@ class TransactionAdapter(val transactions: List<Transaction>)
     : RecyclerView.Adapter<TransactionViewHolder>() {
 
     // cria o item
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): TransactionViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransactionViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.transaction_item, parent, false);
 
