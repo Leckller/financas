@@ -1,5 +1,7 @@
 package com.ruyCorp.dot.repository.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ruyCorp.dot.controller.dto.User.UserCreationDto;
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,12 +11,13 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
@@ -25,42 +28,45 @@ public class User implements UserDetails {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
-  // Orçamento
-  @Getter
   private Double budget;
-  // Saldo
-  @Getter
+
   private Double balance;
 
-  @Getter
-  @Column(unique = true)
+  @Column(unique = true, nullable = false)
   private String email;
-  @Getter
-  private String name;
-  @Getter
-  private String role = "USER";
 
-  @Column(unique = true)
+  @Column(nullable = false)
+  private String name;
+
+  @Column(nullable = false)
+  private String role;
+
+  @Column(unique = true, nullable = false)
   private String username;
-  @Getter
+
+  @Column(nullable = false)
+  @JsonIgnore // segurança
   private String password;
 
   @CreationTimestamp
-  private Date createdAt;
+  private LocalDateTime createdAt;
+
   @UpdateTimestamp
-  private Date updatedAt;
+  private LocalDateTime updatedAt;
 
-  @Getter
-  @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
-  List<Transaction> transactions;
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonManagedReference
+  @Builder.Default
+  private List<Transaction> transactions = List.of();
 
-  public User() {}
-
-  public User(UserCreationDto userCreationDto) {
-    this.name = userCreationDto.name();
-    this.email = userCreationDto.email();
-    this.password = userCreationDto.password();
-    this.username = userCreationDto.username();
+  public User(UserCreationDto dto) {
+    this.name = dto.name();
+    this.email = dto.email();
+    this.password = dto.password();
+    this.username = dto.username();
+    this.role = "USER";
+    this.budget = 0.0;
+    this.balance = 0.0;
   }
 
   public void incrementBalance(Double value) {
@@ -71,34 +77,35 @@ public class User implements UserDetails {
     this.balance -= value;
   }
 
+  // Implementação do UserDetails
+
   @Override
+  @JsonIgnore
   public Collection<? extends GrantedAuthority> getAuthorities() {
     return List.of(new SimpleGrantedAuthority(role));
   }
 
   @Override
-  public String getUsername() {
-    return this.username;
-  }
-
-  @Override
+  @JsonIgnore
   public boolean isAccountNonExpired() {
     return true;
   }
 
   @Override
+  @JsonIgnore
   public boolean isAccountNonLocked() {
     return true;
   }
 
   @Override
+  @JsonIgnore
   public boolean isCredentialsNonExpired() {
     return true;
   }
 
   @Override
+  @JsonIgnore
   public boolean isEnabled() {
     return true;
   }
-
 }
