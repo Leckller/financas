@@ -16,7 +16,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
 
   Page<Transaction> findAllByUser(User user, Pageable pageable);
 
-  @Query("SELECT u FROM Transactions u WHERE MONTH(u.created_at) = :mes AND YEAR(u.created_at) = :ano")
+  @Query("SELECT t FROM Transaction t WHERE MONTH(t.created_at) = :mes AND YEAR(t.created_at) = :ano")
   List<Transaction> findByMesEAno(@Param("mes") int mes, @Param("ano") int ano);
 
 }
