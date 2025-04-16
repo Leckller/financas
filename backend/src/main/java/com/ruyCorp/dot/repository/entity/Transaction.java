@@ -8,6 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,15 +25,17 @@ public class Transaction {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
-  private String type;
+  private String name;
 
   private Double amount;
 
   @CreationTimestamp
-  private LocalDate created_at;
+  @Column(name = "created_at", updatable = false)
+  private LocalDateTime createdAt;
 
   @UpdateTimestamp
-  private LocalDate updated_at;
+  @Column(name = "updated_at")
+  private LocalDateTime updatedAt;
 
   @ManyToOne(optional = false)
   @JoinColumn(name = "user_id")
@@ -49,8 +52,7 @@ public class Transaction {
   private List<Tag> tags = new ArrayList<>();
 
   public Transaction(TransactionDto transactionDto) {
-    this.type = transactionDto.type();
     this.amount = transactionDto.amount();
-    // user e tags devem ser atribuídos em outro ponto do código!
   }
+
 }

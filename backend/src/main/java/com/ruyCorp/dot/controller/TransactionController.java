@@ -10,11 +10,15 @@ import com.ruyCorp.dot.service.exception.InvalidFieldsException;
 import com.ruyCorp.dot.service.exception.NoPermissionException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -30,19 +34,22 @@ public class TransactionController {
     this.userService = userService;
   }
 
-  // Tem q criar uma lógica para verificar pelo tempo
   @GetMapping
-  public ResponseEntity<TransactionListDto> listTransactions () {
+  public ResponseEntity<TransactionListDto> listTransactions (
+      @RequestParam(value = "dataInicio", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataInit,
+      @RequestParam(value = "dataFim", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataFim,
+      Pageable pageable
+  ) throws UsernameNotFoundException {
 
     String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
-    // !!!!!! provisório.
-    List<Transaction> transactions = this.transactionService.listTransactions(username, 0);
-    User user = this.userService.findByUsername(username);
+    List<Transaction> transactions = this.transactionService.listTransactions(username, pageable, dataInit, dataFim);
+
+    Double balance = this.transactionService.countTransactionValues(transactions);
 
     return ResponseEntity
         .status(HttpStatus.OK)
-        .body(TransactionListDto.fromEntity(user.getBalance(), transactions));
+        .body(TransactionListDto.fromEntity(balance, transactions));
   }
 
   @PostMapping

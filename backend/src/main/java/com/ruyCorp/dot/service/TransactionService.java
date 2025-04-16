@@ -7,10 +7,13 @@ import com.ruyCorp.dot.repository.entity.User;
 import com.ruyCorp.dot.service.exception.InvalidFieldsException;
 import com.ruyCorp.dot.service.exception.NoPermissionException;
 import com.ruyCorp.dot.service.exception.NotFound.TransactionNotFoundException;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,13 +28,19 @@ public class TransactionService {
     this.userService = userService;
   }
 
-  public List<Transaction> listTransactions(String username, Integer page) {
+  public Double countTransactionValues(List<Transaction> transactions) {
+    return transactions.stream()
+        .map(Transaction::getAmount)
+        .reduce(0d, Double::sum);
+  }
 
-    Pageable pageable = PageRequest.of(page, 10);
+  public List<Transaction> listTransactions(String username, Pageable pageable, LocalDateTime dataInit, LocalDateTime dataFim) {
 
     User user = userService.findByUsername(username);
 
-    return this.transactionRepository.findAllByUser(user, pageable).getContent();
+    Page<Transaction> transactions = this.transactionRepository.findByUserAndOptionalData(user, dataInit, dataFim, pageable);
+
+    return transactions.getContent();
 
   }
 

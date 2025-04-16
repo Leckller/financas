@@ -7,9 +7,6 @@ import com.ruyCorp.dot.repository.entity.Transaction;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record TransactionDto (
 
-  @JsonProperty("type")
-  String type,
-
   @JsonProperty("amount")
   Double amount,
 
@@ -20,7 +17,6 @@ public record TransactionDto (
 
   public static TransactionDto fromEntity(Transaction transaction) {
     return new TransactionDto(
-        transaction.getType(),
         transaction.getAmount(),
         transaction.getUser().getBalance()
     );
