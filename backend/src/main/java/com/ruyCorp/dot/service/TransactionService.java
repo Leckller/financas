@@ -8,11 +8,9 @@ import com.ruyCorp.dot.service.exception.InvalidFieldsException;
 import com.ruyCorp.dot.service.exception.NoPermissionException;
 import com.ruyCorp.dot.service.exception.NotFound.TransactionNotFoundException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -47,14 +45,11 @@ public class TransactionService {
   public Transaction newTransaction(String username, TransactionDto dto)
       throws InvalidFieldsException {
 
-    if (!Objects.equals(dto.type(), "receita") && !Objects.equals(dto.type(), "despesa")) {
-      throw new InvalidFieldsException("A transação só pode ser do tipo despesa ou receita.");
-    }
-
-    Transaction transaction = new Transaction(dto);
-
+    Transaction transaction = new Transaction();
     User user = this.userService.findByUsername(username);
 
+    transaction.setName(dto.name());
+    transaction.setAmount(dto.amount());
     transaction.setUser(user);
 
     return this.transactionRepository.save(transaction);
@@ -77,11 +72,11 @@ public class TransactionService {
     if(dto.amount() != null) {
       transaction.setAmount(dto.amount());
     }
-    if(dto.type() != null) {
-      transaction.setType(dto.type());
+    if(dto.name() != null) {
+      transaction.setName(dto.name());
     }
 
-    return null;
+    return this.transactionRepository.save(transaction);
 
   }
 
@@ -98,12 +93,6 @@ public class TransactionService {
     Transaction transaction = this.getTransactionById(id);
 
     this.userHavePermission(user, transaction);
-
-    if(transaction.getType().equals("receita")) {
-      user.decrementBalance(-Math.abs(transaction.getAmount()));
-    } else {
-      user.incrementBalance(Math.abs(transaction.getAmount()));
-    }
 
     this.transactionRepository.delete(transaction);
 

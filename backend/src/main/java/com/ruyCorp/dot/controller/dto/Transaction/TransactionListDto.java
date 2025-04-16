@@ -10,7 +10,7 @@ import java.util.List;
 public record TransactionListDto (
 
     @JsonProperty("transactions")
-    List<TransactionCreationDto> transactions,
+    List<TransactionDto> transactions,
 
     @JsonProperty("balance")
     Double balance
@@ -19,7 +19,7 @@ public record TransactionListDto (
 
   public static TransactionListDto fromEntity (Double balance, List<Transaction> transactions) {
     return new TransactionListDto(
-        transactions.stream().map(TransactionCreationDto::fromEntity).toList(),
+        transactions.stream().map(TransactionDto::fromEntity).toList(),
         balance
     );
   }

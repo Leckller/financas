@@ -12,6 +12,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -30,8 +31,6 @@ public class User implements UserDetails {
 
   private Double budget;
 
-  private Double balance;
-
   @Column(unique = true, nullable = false)
   private String email;
 
@@ -39,13 +38,13 @@ public class User implements UserDetails {
   private String name;
 
   @Column(nullable = false)
-  private String role;
+  private String role = "USER";
 
   @Column(unique = true, nullable = false)
   private String username;
 
   @Column(nullable = false)
-  @JsonIgnore // segurança
+  @JsonIgnore
   private String password;
 
   @CreationTimestamp
@@ -57,7 +56,7 @@ public class User implements UserDetails {
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
   @JsonManagedReference
   @Builder.Default
-  private List<Transaction> transactions = List.of();
+  private List<Transaction> transactions = new ArrayList<>();
 
   public User(UserCreationDto dto) {
     this.name = dto.name();
@@ -66,18 +65,7 @@ public class User implements UserDetails {
     this.username = dto.username();
     this.role = "USER";
     this.budget = 0.0;
-    this.balance = 0.0;
   }
-
-  public void incrementBalance(Double value) {
-    this.balance += value;
-  }
-
-  public void decrementBalance(Double value) {
-    this.balance -= value;
-  }
-
-  // Implementação do UserDetails
 
   @Override
   @JsonIgnore

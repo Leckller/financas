@@ -1,13 +1,11 @@
 package com.ruyCorp.dot.repository.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.ruyCorp.dot.controller.dto.Transaction.TransactionDto;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,9 +48,5 @@ public class Transaction {
   @Builder.Default
   @JsonManagedReference
   private List<Tag> tags = new ArrayList<>();
-
-  public Transaction(TransactionDto transactionDto) {
-    this.amount = transactionDto.amount();
-  }
 
 }

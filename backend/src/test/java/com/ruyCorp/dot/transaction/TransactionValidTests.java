@@ -1,10 +1,7 @@
 package com.ruyCorp.dot.transaction;
 
-import com.ruyCorp.dot.controller.dto.TokenDto;
-import com.ruyCorp.dot.controller.dto.Transaction.TransactionCreationDto;
 import com.ruyCorp.dot.controller.dto.Transaction.TransactionDto;
 import com.ruyCorp.dot.controller.dto.Transaction.TransactionListDto;
-import com.ruyCorp.dot.controller.dto.User.UserCreationDto;
 import com.ruyCorp.dot.repository.entity.Transaction;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,7 +13,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.testcontainers.shaded.com.fasterxml.jackson.core.type.TypeReference;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import static com.ruyCorp.dot.utils.CreateUser.createUserRequest;
@@ -42,7 +38,14 @@ class TransactionValidTests {
   public void listTransactionsTest() throws Exception {
 
     String token = createUserRequest(mockMvc);
-		TransactionDto transaction = this.createTransaction(token);
+
+		this.createTransaction(token, 100d, "Bet365");
+		this.createTransaction(token, 600d, "Salário - primeira parcela");
+		this.createTransaction(token, -600d, "Trybe");
+		this.createTransaction(token, -45d, "Manicure da minha esposa");
+		this.createTransaction(token, -220d, "Remédio para acne");
+		this.createTransaction(token, -35d, "Cartão de crédito");
+		this.createTransaction(token, 900d, "Salário - segunda parcela");
 
     MvcResult request = mockMvc.perform(MockMvcRequestBuilders
             .get("/transaction")
@@ -57,16 +60,15 @@ class TransactionValidTests {
 
 		Transaction transactionListed = new Transaction();
 
-		assertThat(transactions.balance()).isEqualTo(1400d);
+		assertThat(transactions.balance()).isEqualTo(700d);
 		assertThat(transactions.transactions()).isNotNull().isInstanceOf(List.class);
 
   }
 
-	@DisplayName("Cria uma transaction")
-	public TransactionDto createTransaction(String token) throws Exception {
+	public TransactionDto createTransaction(String token, Double amount, String name) throws Exception {
 
-		TransactionCreationDto mockedTransact = new
-				TransactionCreationDto("despesa", 100d);
+		TransactionDto mockedTransact = new
+				TransactionDto(amount, name);
 
 		String body = this.objectMapper.writeValueAsString(mockedTransact);
 
@@ -82,8 +84,7 @@ class TransactionValidTests {
     TransactionDto transaction = objectMapper.readValue(json, TransactionDto.class);
 
     assertEquals(mockedTransact.amount(), transaction.amount());
-		assertEquals(mockedTransact.type(), transaction.type());
-		assertEquals(1400d, transaction.balance());
+		assertEquals(mockedTransact.name(), transaction.name());
 
 		return transaction;
 

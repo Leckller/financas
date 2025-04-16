@@ -3,9 +3,7 @@ package com.ruyCorp.dot.controller;
 import com.ruyCorp.dot.controller.dto.Transaction.TransactionDto;
 import com.ruyCorp.dot.controller.dto.Transaction.TransactionListDto;
 import com.ruyCorp.dot.repository.entity.Transaction;
-import com.ruyCorp.dot.repository.entity.User;
 import com.ruyCorp.dot.service.TransactionService;
-import com.ruyCorp.dot.service.UserService;
 import com.ruyCorp.dot.service.exception.InvalidFieldsException;
 import com.ruyCorp.dot.service.exception.NoPermissionException;
 import jakarta.validation.Valid;
@@ -26,12 +24,10 @@ import java.util.List;
 public class TransactionController {
 
   private final TransactionService transactionService;
-  private final UserService userService;
 
   @Autowired
-  public TransactionController(TransactionService transactionService, UserService userService) {
+  public TransactionController(TransactionService transactionService) {
     this.transactionService = transactionService;
-    this.userService = userService;
   }
 
   @GetMapping
