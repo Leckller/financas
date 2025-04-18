@@ -8,18 +8,31 @@ const routes = [
     component: HomeView
   },
   {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
+    path: '/login',
+    name: 'login',
+    meta: { public: true }, // Rota pública
+    component: () => import('../views/LoginView.vue')
   }
 ]
 
 const router = createRouter({
   history: createWebHashHistory(),
   routes
+})
+
+// Simulação de função que verifica se o usuário está autenticado
+function isAuthenticated () {
+  return !!localStorage.getItem('authToken') // ou outro método de verificação
+}
+
+router.beforeEach((to, from, next) => {
+  // Se a rota não for pública e o usuário não estiver autenticado
+  if (!to.meta.public && !isAuthenticated()) {
+    return next('/login') // redireciona para login
+  }
+
+  // Senão, segue normalmente
+  next()
 })
 
 export default router
