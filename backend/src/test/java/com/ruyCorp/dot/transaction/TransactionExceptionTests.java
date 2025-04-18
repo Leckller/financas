@@ -1,12 +1,12 @@
 package com.ruyCorp.dot.transaction;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -14,7 +14,8 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 @DisplayName("Transaction Exceptions Tests")
 public class TransactionExceptionTests {
 
-  ObjectMapper objectMapper = new ObjectMapper();
+  @Autowired
+  ObjectMapper objectMapper;
 
   @Autowired
   MockMvc mockMvc;

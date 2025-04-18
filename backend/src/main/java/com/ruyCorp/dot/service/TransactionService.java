@@ -1,5 +1,7 @@
 package com.ruyCorp.dot.service;
 
+import com.ruyCorp.dot.controller.dto.Transaction.CreateTransactionDto;
+import com.ruyCorp.dot.controller.dto.Transaction.EditTransactionDto;
 import com.ruyCorp.dot.controller.dto.Transaction.TransactionDto;
 import com.ruyCorp.dot.repository.TransactionRepository;
 import com.ruyCorp.dot.repository.entity.Transaction;
@@ -43,7 +45,7 @@ public class TransactionService {
 
   }
 
-  public Transaction newTransaction(String username, TransactionDto dto)
+  public Transaction newTransaction(String username, CreateTransactionDto dto)
       throws InvalidFieldsException {
 
     Transaction transaction = new Transaction();
@@ -74,9 +76,9 @@ public class TransactionService {
   }
 
   public Transaction editTransaction(
-      TransactionDto dto, Integer id, String username) throws NoPermissionException {
+      EditTransactionDto dto, String username) throws NoPermissionException {
 
-    Transaction transaction = getTransactionById(id);
+    Transaction transaction = getTransactionById(dto.id());
     User user = this.userService.findByUsername(username);
 
     this.userHavePermission(user, transaction);

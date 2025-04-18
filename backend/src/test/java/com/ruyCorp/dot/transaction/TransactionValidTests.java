@@ -1,8 +1,12 @@
 package com.ruyCorp.dot.transaction;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ruyCorp.dot.controller.dto.Transaction.CreateTransactionDto;
+import com.ruyCorp.dot.controller.dto.Transaction.EditTransactionDto;
 import com.ruyCorp.dot.controller.dto.Transaction.TransactionDto;
 import com.ruyCorp.dot.controller.dto.Transaction.TransactionListDto;
 import com.ruyCorp.dot.repository.entity.Transaction;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +17,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import static com.ruyCorp.dot.utils.CreateUser.createUserRequest;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,10 +28,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@Transactional
 @DisplayName("Transaction Valid Tests")
 class TransactionValidTests {
 
-	ObjectMapper objectMapper = new ObjectMapper();
+	@Autowired
+	ObjectMapper objectMapper;
 
 	@Autowired
 	MockMvc mockMvc;
@@ -55,8 +60,7 @@ class TransactionValidTests {
         .andReturn();
 
 		String json = request.getResponse().getContentAsString();
-		TransactionListDto transactions = objectMapper
-				.readValue(json, TransactionListDto.class);
+		TransactionListDto transactions = objectMapper.readValue(json, TransactionListDto.class);
 
 		Transaction transactionListed = new Transaction();
 
@@ -71,9 +75,13 @@ class TransactionValidTests {
 
 		String token = createUserRequest(mockMvc);
 
-		String transactionId = Integer.toString(1);
+		MvcResult resultTransaction = this.createTransaction(token, 150d, "SmartWatch");
 
-		this.createTransaction(token, 150d, "SmartWatch");
+		String json = resultTransaction.getResponse().getContentAsString();
+
+		TransactionDto transaction = objectMapper.readValue(json, TransactionDto.class);
+
+		String transactionId = Integer.toString(transaction.id());
 
 		mockMvc.perform(MockMvcRequestBuilders
 						.delete("/transaction/" + transactionId)
@@ -89,26 +97,76 @@ class TransactionValidTests {
 
 	}
 
-	public void createTransaction(String token, Double amount, String name) throws Exception {
+	@Test
+	@DisplayName("POST /transaction - Testa a criação de uma transaction")
+	public void createTransactionTest() throws Exception {
 
-		TransactionDto mockedTransact = new
-				TransactionDto(amount, name);
+		String token = createUserRequest(mockMvc);
+
+		MvcResult response = this.createTransaction(token, 100d, "5 Choppinhos");
+
+		String json = response.getResponse().getContentAsString();
+		TransactionDto transaction = objectMapper.readValue(json, TransactionDto.class);
+
+		assertEquals(100d, transaction.amount());
+		assertEquals("5 Choppinhos", transaction.name());
+		assertEquals(201, response.getResponse().getStatus());
+
+	}
+
+	@Test
+	@DisplayName("PATCH /transaction - Testa aedição de uma transação")
+	public void editTransactionTest() throws Exception {
+
+		String token = createUserRequest(mockMvc);
+
+		MvcResult createResultTransaction = this.createTransaction(token, 200d, "cachaça");
+		String jsonCreateTransaction = createResultTransaction.getResponse().getContentAsString();
+		TransactionDto createdTransaction = objectMapper.readValue(jsonCreateTransaction, TransactionDto.class);
+		String transactionId = Integer.toString(createdTransaction.id());
+
+		EditTransactionDto editTransaction = new EditTransactionDto(
+				createdTransaction.id(), "refrigerante", 100d
+		);
+		String body = objectMapper.writeValueAsString(editTransaction);
+
+
+		mockMvc.perform(MockMvcRequestBuilders
+						.patch("/transaction")
+						.contentType("application/json")
+						.header("Authorization", token)
+						.content(body))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andReturn();
+
+		MvcResult request = mockMvc.perform(MockMvcRequestBuilders
+						.get("/transaction/" + transactionId)
+						.header("Authorization", token))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andReturn();
+
+		String json = request.getResponse().getContentAsString();
+		TransactionDto transaction = objectMapper.readValue(json, TransactionDto.class);
+
+		assertEquals(createdTransaction.id(), transaction.id());
+		assertEquals(100d, transaction.amount());
+		assertEquals("refrigerante", transaction.name());
+
+	}
+
+	public MvcResult createTransaction(String token, Double amount, String name) throws Exception {
+
+		CreateTransactionDto mockedTransact = new
+				CreateTransactionDto(amount, name);
 
 		String body = this.objectMapper.writeValueAsString(mockedTransact);
 
-		MvcResult request = mockMvc.perform(MockMvcRequestBuilders
+		return mockMvc.perform(MockMvcRequestBuilders
 				.post("/transaction")
 						.contentType("application/json")
             .header("Authorization", token)
 						.content(body))
-				.andExpect(MockMvcResultMatchers.status().isCreated())
 				.andReturn();
-
-    String json = request.getResponse().getContentAsString();
-    TransactionDto transaction = objectMapper.readValue(json, TransactionDto.class);
-
-    assertEquals(mockedTransact.amount(), transaction.amount());
-		assertEquals(mockedTransact.name(), transaction.name());
 
 	}
 

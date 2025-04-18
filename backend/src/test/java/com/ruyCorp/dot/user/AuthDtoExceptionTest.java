@@ -1,5 +1,6 @@
 package com.ruyCorp.dot.user;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ruyCorp.dot.service.exception.MessageDto;
 import com.ruyCorp.dot.utils.CreateUser;
 import org.junit.jupiter.api.DisplayName;
@@ -13,7 +14,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -23,7 +23,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class AuthDtoExceptionTest {
 
-  ObjectMapper objectMapper = new ObjectMapper();
+  @Autowired
+  ObjectMapper objectMapper;
 
   @Autowired
   MockMvc mockMvc;

@@ -1,28 +1,40 @@
 package com.ruyCorp.dot.controller.dto.Transaction;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ruyCorp.dot.repository.entity.Transaction;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record TransactionDto (
 
+  @JsonProperty("id")
+  Integer id,
+
   @JsonProperty("amount")
-  @NotNull(message = "Não é possível criar uma transação sem um valor")
   Double amount,
 
   @JsonProperty("name")
-  @NotBlank(message = "Não é possível criar uma transação sem um nome")
-  String name
+  String name,
+
+  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
+  @JsonProperty("createdAt")
+  LocalDateTime createdAt,
+
+  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
+  @JsonProperty("updatedAt")
+  LocalDateTime updatedAt
 
   ) {
 
   public static TransactionDto fromEntity(Transaction transaction) {
     return new TransactionDto(
+        transaction.getId(),
         transaction.getAmount(),
-        transaction.getName()
+        transaction.getName(),
+        transaction.getCreatedAt(),
+        transaction.getUpdatedAt()
     );
   }
 

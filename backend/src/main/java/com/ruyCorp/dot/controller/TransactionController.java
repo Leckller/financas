@@ -1,5 +1,7 @@
 package com.ruyCorp.dot.controller;
 
+import com.ruyCorp.dot.controller.dto.Transaction.CreateTransactionDto;
+import com.ruyCorp.dot.controller.dto.Transaction.EditTransactionDto;
 import com.ruyCorp.dot.controller.dto.Transaction.TransactionDto;
 import com.ruyCorp.dot.controller.dto.Transaction.TransactionListDto;
 import com.ruyCorp.dot.repository.entity.Transaction;
@@ -61,7 +63,7 @@ public class TransactionController {
 
   @PostMapping
   public ResponseEntity<TransactionDto> newTransaction(
-      @Valid @RequestBody TransactionDto dto) throws InvalidFieldsException {
+      @Valid @RequestBody CreateTransactionDto dto) throws InvalidFieldsException {
 
     String username = SecurityContextHolder.getContext().getAuthentication().getName();
     Transaction transaction = this.transactionService.newTransaction(username, dto);
@@ -72,12 +74,13 @@ public class TransactionController {
 
   }
 
-  @PatchMapping("{id}")
+  @PatchMapping()
   public ResponseEntity<TransactionDto> editTransaction(
-      @Valid @RequestBody TransactionDto dto, @PathVariable Integer id) {
+      @Valid @RequestBody EditTransactionDto dto) throws NoPermissionException {
 
     String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
+    Transaction transaction = this.transactionService.editTransaction(dto, username);
 
     return null;
   }
