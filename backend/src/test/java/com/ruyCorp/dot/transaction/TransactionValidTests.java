@@ -34,7 +34,7 @@ class TransactionValidTests {
 	MockMvc mockMvc;
 
   @Test
-	@DisplayName("Testa se retorna uma lista de transactions")
+	@DisplayName("GET /transaction - Testa se retorna uma lista de transactions")
   public void listTransactionsTest() throws Exception {
 
     String token = createUserRequest(mockMvc);
@@ -65,7 +65,31 @@ class TransactionValidTests {
 
   }
 
-	public TransactionDto createTransaction(String token, Double amount, String name) throws Exception {
+	@Test
+	@DisplayName("DELETE /transaction/{id} - Apaga uma transação e verifica se retorna OK")
+	public void deleteTransactionTest() throws Exception {
+
+		String token = createUserRequest(mockMvc);
+
+		String transactionId = Integer.toString(1);
+
+		this.createTransaction(token, 150d, "SmartWatch");
+
+		mockMvc.perform(MockMvcRequestBuilders
+						.delete("/transaction/" + transactionId)
+						.header("Authorization", token))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andReturn();
+
+		mockMvc.perform(MockMvcRequestBuilders
+						.get("/transaction/" + transactionId)
+						.header("Authorization", token))
+				.andExpect(MockMvcResultMatchers.status().isNotFound())
+				.andReturn();
+
+	}
+
+	public void createTransaction(String token, Double amount, String name) throws Exception {
 
 		TransactionDto mockedTransact = new
 				TransactionDto(amount, name);
@@ -85,8 +109,6 @@ class TransactionValidTests {
 
     assertEquals(mockedTransact.amount(), transaction.amount());
 		assertEquals(mockedTransact.name(), transaction.name());
-
-		return transaction;
 
 	}
 

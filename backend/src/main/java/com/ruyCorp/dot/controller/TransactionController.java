@@ -30,6 +30,17 @@ public class TransactionController {
     this.transactionService = transactionService;
   }
 
+  @GetMapping("{id}")
+  public ResponseEntity<TransactionDto> getTransactionById(@PathVariable int id) throws NoPermissionException {
+
+    String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+    Transaction transaction = this.transactionService.getTransactionByIdAndUsername(id, username);
+
+    return ResponseEntity.status(HttpStatus.OK).body(TransactionDto.fromEntity(transaction));
+
+  }
+
   @GetMapping
   public ResponseEntity<TransactionListDto> listTransactions (
       @RequestParam(value = "dataInicio", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataInit,

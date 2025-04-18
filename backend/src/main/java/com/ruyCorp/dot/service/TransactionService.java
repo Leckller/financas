@@ -6,6 +6,7 @@ import com.ruyCorp.dot.repository.entity.Transaction;
 import com.ruyCorp.dot.repository.entity.User;
 import com.ruyCorp.dot.service.exception.InvalidFieldsException;
 import com.ruyCorp.dot.service.exception.NoPermissionException;
+import com.ruyCorp.dot.service.exception.NotFound.NotFoundException;
 import com.ruyCorp.dot.service.exception.NotFound.TransactionNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -56,6 +57,17 @@ public class TransactionService {
 
   }
 
+  public Transaction getTransactionByIdAndUsername(Integer id, String username) throws TransactionNotFoundException, NoPermissionException {
+    Transaction transaction = this.getTransactionById(id);
+
+    if (!Objects.equals(transaction.getUser().getUsername(), username)) {
+      throw new NoPermissionException();
+    }
+
+    return transaction;
+
+  }
+
   public Transaction getTransactionById(Integer id) throws TransactionNotFoundException {
     return this.transactionRepository.findById(id)
         .orElseThrow(TransactionNotFoundException::new);
@@ -86,7 +98,7 @@ public class TransactionService {
     }
   }
 
-  public void deleteTransaction(Integer id, String username) throws NoPermissionException {
+  public void deleteTransaction(Integer id, String username) throws NoPermissionException, NotFoundException {
 
     User user = this.userService.findByUsername(username);
 
