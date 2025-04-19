@@ -56,9 +56,8 @@ public class UserService implements UserDetailsService {
 
     User user = this.userRepository.findByUsername(username)
         .orElseThrow(() -> new InvalidFieldsException("Usuário ou senha inválidos!"));
-    String hashPassword = this.tokenService.generateToken(user.getPassword());
 
-    if(!passwordEncoder.matches(password, hashPassword)) {
+    if(!passwordEncoder.matches(password, user.getPassword())) {
       throw new InvalidFieldsException("Usuário ou senha inválidos!");
     }
 
