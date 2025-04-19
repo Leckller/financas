@@ -1,3 +1,4 @@
+import fetchData from '../fetch'
 import { host } from '../host'
 
 export default async function editTransaction (data = {}) {
@@ -12,5 +13,5 @@ export default async function editTransaction (data = {}) {
     body: data
   }
 
-  return await fetch(url, options)
+  return await fetchData(url, options)
 }

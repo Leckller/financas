@@ -11,12 +11,19 @@ export default async function fetchData (url, options = {}) {
     },
     body: JSON.stringify(body)
   })
-  if (!response.ok) {
+
+  const json = await response.json()
+
+  console.log(json)
+  if (response.status !== 200) {
+    const text = Object.values(json).map(t => t + '\n')
     Swal.fire({
       icon: 'error',
       title: 'Oops...',
-      text: `Something went wrong! ${response.statusText}`
+      text
     })
+    throw new Error()
   }
-  return await response.json()
+
+  return json
 }

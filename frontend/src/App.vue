@@ -6,7 +6,7 @@
   <router-view/>
 </template>
 
-<style>
+<style global>
 
 .c1 { color: #e3dfba }
 .c2 { color: #c8d6bf }

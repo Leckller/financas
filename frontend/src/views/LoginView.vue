@@ -1,55 +1,65 @@
 <template>
-
-  <main>
-
-    <h1>
-      Login
-    </h1>
+  <main class="">
+    <h1>Login</h1>
 
     <form @submit.prevent="handleLogin">
-
       <section>
-
         <label>
-          username
-          <input type="text" v-model="username" placeholder="Username" class="w-full p-2 border rounded c5" required />
+          Username
+          <input
+            type="text"
+            v-model="form.username"
+            placeholder="Username"
+            class="w-full p-2 border rounded c5"
+            required
+          />
         </label>
 
         <label>
-          email
-          <input type="text" v-model="email" placeholder="Email" class="w-full p-2 border rounded c5" required />
+          Password
+          <input
+            type="password"
+            v-model="form.password"
+            placeholder="Password"
+            class="w-full p-2 border rounded c5"
+            required
+          />
         </label>
 
-        <label>
-          password
-          <input type="password" v-model="password" placeholder="Password" class="w-full p-2 border rounded c5" required />
-        </label>
-
+        <button @click="handleSubmit" type="submit" class="mt-4 p-2 bg-blue-500 text-white rounded">Entrar</button>
       </section>
-
     </form>
-
   </main>
-
 </template>
 
-<script>
+<script setup>
 
-export default {
-  name: 'LoginView',
-  data () {
-    return {
-      username: '',
-      password: '',
-      email: ''
+import loginUser from '@/service/Auth/LoginUser'
+import Swal from 'sweetalert2'
+import { reactive } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+const form = reactive({
+  username: '',
+  password: ''
+})
+
+const handleLogin = async () => {
+  try {
+    if (form.username && form.password) {
+      const { token } = await loginUser({ username: form.username, password: form.password })
+      localStorage.setItem('authToken', token)
+      router.push('/')
+    } else {
+      Swal.fire({
+        title: 'Preencha todos os campos corretamente!'
+      })
     }
-  },
-  methods: {
-    handleLogin () {
-      console.log('Username:', this.username)
-      console.log('Password:', this.password)
-    }
+  } catch {
+    console.log('catched')
+    localStorage.removeItem('authToken')
   }
 }
-
 </script>

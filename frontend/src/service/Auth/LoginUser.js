@@ -1,3 +1,4 @@
+import fetchData from '../fetch'
 import { host } from '../host'
 
 export default async function loginUser (data = {}) {
@@ -13,5 +14,5 @@ export default async function loginUser (data = {}) {
     body: { password, username }
   }
 
-  return await fetch(url, options)
+  return await fetchData(url, options)
 }

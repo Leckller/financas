@@ -1,3 +1,4 @@
+import fetchData from '../fetch'
 import { host } from '../host'
 
 export default async function deleteTransaction (id) {
@@ -12,5 +13,5 @@ export default async function deleteTransaction (id) {
     body: {}
   }
 
-  return await fetch(url, options)
+  return await fetchData(url, options)
 }
