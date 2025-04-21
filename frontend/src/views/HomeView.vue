@@ -10,7 +10,7 @@
     <section>
       <TransactionComponent
         v-for="t in transaction.transactions" :key="t.id"
-        :name="t.name" :amount="t.amount" :created-at="t.createdAt" :updated-at="t.updatedAt"
+        :name="t.name" :amount="t.amount" :created-at="t.createdAt" :updated-at="t.updatedAt" :id="t.id"
       />
     </section>
   </main>
