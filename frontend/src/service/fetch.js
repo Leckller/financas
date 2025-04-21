@@ -2,6 +2,7 @@ import Swal from 'sweetalert2'
 
 export default async function fetchData (url, options = {}) {
   const { method = 'GET', headers = {}, body } = options
+  const isGet = method.toUpperCase() === 'GET'
 
   const response = await fetch(url, {
     method,
@@ -9,19 +10,19 @@ export default async function fetchData (url, options = {}) {
       'Content-Type': 'application/json',
       ...headers
     },
-    body: JSON.stringify(body)
+    ...(isGet ? {} : { body: JSON.stringify(body) })
   })
 
   const json = await response.json()
 
-  if (response.status !== 200 && response.status !== 201) {
-    const text = Object.values(json).map(t => t + '\n')
+  if (!response.ok) {
+    const text = Object.values(json).join('\n')
     Swal.fire({
       icon: 'error',
       title: 'Oops...',
       text
     })
-    throw new Error()
+    throw new Error(text)
   }
 
   return json

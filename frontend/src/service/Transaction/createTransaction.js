@@ -10,7 +10,7 @@ export default async function createTransaction (data = {}) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      authorization: `Bearer ${localStorage.getItem('token')}`
+      authorization: `${localStorage.getItem('authToken')}`
     },
     body: { name, amount }
   }

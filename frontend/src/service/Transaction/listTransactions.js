@@ -8,10 +8,9 @@ export default async function listTransaction () {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      authorization: `Bearer ${localStorage.getItem('token')}`
-    },
-    body: {}
+      authorization: `${localStorage.getItem('authToken')}`
+    }
   }
 
-  return await fetchData(url, options)
+  return await fetchData(url, options, true)
 }
