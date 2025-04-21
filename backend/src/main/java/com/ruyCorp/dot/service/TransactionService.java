@@ -2,7 +2,6 @@ package com.ruyCorp.dot.service;
 
 import com.ruyCorp.dot.controller.dto.Transaction.CreateTransactionDto;
 import com.ruyCorp.dot.controller.dto.Transaction.EditTransactionDto;
-import com.ruyCorp.dot.controller.dto.Transaction.TransactionDto;
 import com.ruyCorp.dot.repository.TransactionRepository;
 import com.ruyCorp.dot.repository.entity.Transaction;
 import com.ruyCorp.dot.repository.entity.User;
