@@ -1,6 +1,7 @@
 <template>
 
   <main>
+    <h1>DOT FINANCE</h1>
 
   </main>
 

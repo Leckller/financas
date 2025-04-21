@@ -12,6 +12,12 @@ const routes = [
     name: 'login',
     meta: { public: true }, // Rota pública
     component: () => import('../views/LoginView.vue')
+  },
+  {
+    path: '/register',
+    name: 'register',
+    meta: { public: true }, // Rota pública
+    component: () => import('../views/RegisterView.vue')
   }
 ]
 

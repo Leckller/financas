@@ -14,8 +14,7 @@ export default async function fetchData (url, options = {}) {
 
   const json = await response.json()
 
-  console.log(json)
-  if (response.status !== 200) {
+  if (response.status !== 200 && response.status !== 201) {
     const text = Object.values(json).map(t => t + '\n')
     Swal.fire({
       icon: 'error',
