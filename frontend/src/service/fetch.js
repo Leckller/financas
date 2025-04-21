@@ -13,6 +13,11 @@ export default async function fetchData (url, options = {}) {
     ...(isGet ? {} : { body: JSON.stringify(body) })
   })
 
+  if (response.status === 403) {
+    localStorage.removeItem('authToken')
+    window.location.reload()
+  }
+
   const json = await response.json()
 
   if (!response.ok) {

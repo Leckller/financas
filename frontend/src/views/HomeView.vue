@@ -1,6 +1,10 @@
 <template>
-  <main>
+  <header>
     <h1>DOT FINANCE</h1>
+    <p>Balance: {{ transaction.balance }}</p>
+  </header>
+
+  <main>
     <button @click="handleCreateTransaction">Nova Transação</button>
 
     <section>
@@ -31,6 +35,7 @@ onMounted(async () => {
   try {
     const transactionsFetch = await listTransaction()
     transaction.addTransactionList(transactionsFetch.transactions)
+    transaction.setBalance(transactionsFetch.balance)
   } catch (e) {
     console.log(e)
   }
@@ -65,6 +70,7 @@ const handleCreateTransaction = async () => {
     form.amount = formValues.amount
     const addTransaction = await createTransaction({ name: formValues.name, amount: formValues.amount })
     transaction.addTransaction(addTransaction)
+    transaction.setBalance(transaction.balance + form.amount)
   }
 }
 </script>

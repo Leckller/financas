@@ -59,8 +59,13 @@
           />
         </label>
 
-        <button @click="handleSubmit" type="submit" class="mt-4 p-2 bg-blue-500 text-white rounded">Entrar</button>
       </section>
+
+      <button @click="handleSubmit" type="submit" class="mt-4 p-2 bg-blue-500 text-white rounded">Entrar</button>
+      <router-link to="/login">
+        Já possui uma conta? Faça o login!
+      </router-link>
+
     </form>
   </main>
 </template>

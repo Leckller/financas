@@ -26,8 +26,11 @@
           />
         </label>
 
-        <button @click="handleSubmit" type="submit" class="mt-4 p-2 bg-blue-500 text-white rounded">Entrar</button>
       </section>
+      <button @click="handleSubmit" type="submit" class="mt-4 p-2 bg-blue-500 text-white rounded">Entrar</button>
+      <router-link to="/register">
+        Ainda não possui uma conta? Registre-se agora!
+      </router-link>
     </form>
   </main>
 </template>
