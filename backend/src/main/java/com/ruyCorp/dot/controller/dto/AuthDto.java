@@ -1,9 +1,11 @@
 package com.ruyCorp.dot.controller.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public record AuthDto(
     @NotBlank(message= "O Username é obrigatório")
     @JsonProperty("username")

@@ -51,4 +51,11 @@ public class AuthDtoExceptionTest {
 
   }
 
+  @Test
+  @DisplayName("POST /auth/login - Testa se retorna um token caso o usuário exista")
+  public void userExistsTest() {
+
+  }
+
+
 }

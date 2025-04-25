@@ -7,6 +7,7 @@ import com.ruyCorp.dot.controller.dto.Transaction.TransactionListDto;
 import com.ruyCorp.dot.repository.entity.Transaction;
 import com.ruyCorp.dot.service.TransactionService;
 import com.ruyCorp.dot.service.exception.InvalidFieldsException;
+import com.ruyCorp.dot.service.exception.MessageDto;
 import com.ruyCorp.dot.service.exception.NoPermissionException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,14 +87,14 @@ public class TransactionController {
   }
 
   @DeleteMapping("{id}")
-  public ResponseEntity deleteTransaction(@PathVariable Integer id)
+  public ResponseEntity<MessageDto> deleteTransaction(@PathVariable Integer id)
       throws NoPermissionException {
 
     String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
     this.transactionService.deleteTransaction(id, username);
 
-    return ResponseEntity.status(HttpStatus.OK).build();
+    return ResponseEntity.status(HttpStatus.OK).body(new MessageDto("Transação deletada com sucesso."));
 
   }
 
