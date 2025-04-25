@@ -1,6 +1,7 @@
 package com.ruyCorp.dot.service;
 
 import com.ruyCorp.dot.controller.dto.Tag.TagCreationDto;
+import com.ruyCorp.dot.controller.dto.Tag.TagEditDto;
 import com.ruyCorp.dot.controller.dto.Tag.TagSyncTransactionDto;
 import com.ruyCorp.dot.repository.TagRepository;
 import com.ruyCorp.dot.repository.entity.Tag;
@@ -10,6 +11,7 @@ import com.ruyCorp.dot.service.exception.NoPermissionException;
 import com.ruyCorp.dot.service.exception.NotFound.TransactionNotFoundException;
 import com.ruyCorp.dot.service.exception.NotFound.UserNotFoundException;
 import com.ruyCorp.dot.service.exception.Tag.TagAlreadyExistsException;
+import com.ruyCorp.dot.service.exception.Tag.TagNotBelongsUserException;
 import com.ruyCorp.dot.service.exception.Tag.TagNotFoundException;
 import com.ruyCorp.dot.service.exception.Tag.TagSyncTransactionNoPermissionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,16 +74,37 @@ public class TagService {
 
   }
 
+  public Tag editTag(Integer tagId, TagEditDto dto, String username) throws TagNotBelongsUserException {
+
+    Tag tag = tagBelongsUser(tagId, username);
+
+    if(dto.name() != null) {
+      tag.setName(dto.name());
+    }
+    if(dto.color() != null) {
+      tag.setColor(dto.color());
+    }
+
+    return this.tagRepository.save(tag);
+
+  }
+
   public List<Tag> listTags (Pageable pageable) {
     return this.tagRepository.listWithPages(pageable).getContent();
   }
 
-  public void deleteTag(Integer id, String username) {
+  public void deleteTag(Integer id, String username) throws TagNotBelongsUserException {
+    Tag tag = this.tagBelongsUser(id, username);
+    this.tagRepository.delete(tag);
+  }
 
-    Tag tag = this.getTagById(id);
+  public Tag tagBelongsUser(Integer tagId, String username) throws TagNotBelongsUserException {
+    Tag tag = this.getTagById(tagId);
     User user = this.userService.findByUsername(username);
-
-
+    if (!Objects.equals(tag.getUser().getId(), user.getId())) {
+      throw new TagNotBelongsUserException();
+    }
+    return tag;
   }
 
   public void userHavePermission(Integer userId, Transaction transaction) throws TagSyncTransactionNoPermissionException {

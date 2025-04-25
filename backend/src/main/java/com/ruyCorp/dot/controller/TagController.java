@@ -2,11 +2,13 @@ package com.ruyCorp.dot.controller;
 
 import com.ruyCorp.dot.controller.dto.Tag.TagCreationDto;
 import com.ruyCorp.dot.controller.dto.Tag.TagDto;
+import com.ruyCorp.dot.controller.dto.Tag.TagEditDto;
 import com.ruyCorp.dot.controller.dto.Tag.TagSyncTransactionDto;
 import com.ruyCorp.dot.repository.entity.Tag;
 import com.ruyCorp.dot.service.TagService;
 import com.ruyCorp.dot.service.exception.MessageDto;
 import com.ruyCorp.dot.service.exception.NoPermissionException;
+import com.ruyCorp.dot.service.exception.Tag.TagNotBelongsUserException;
 import com.ruyCorp.dot.service.exception.Tag.TagSyncTransactionNoPermissionException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,8 +61,22 @@ public class TagController {
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<MessageDto> deleteTag(@PathVariable Integer id) {
+  public ResponseEntity<MessageDto> deleteTag(@PathVariable Integer id) throws TagNotBelongsUserException {
 
+    String username = SecurityContextHolder.getContext().getAuthentication().getName();
+    this.tagService.deleteTag(id, username);
+    return ResponseEntity.status(HttpStatus.OK).body(new MessageDto("Tag deletada com sucesso."));
+
+  }
+
+  @PatchMapping("{id}")
+  public ResponseEntity<TagDto> editTag(@PathVariable Integer id, @Valid @RequestBody TagEditDto body)
+      throws TagNotBelongsUserException {
+
+    String username = SecurityContextHolder.getContext().getAuthentication().getName();
+    Tag tag = this.tagService.editTag(id, body, username);
+
+    return ResponseEntity.status(HttpStatus.OK).body(TagDto.fromEntity(tag));
 
   }
 
