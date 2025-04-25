@@ -3,7 +3,6 @@ package com.ruyCorp.dot.service;
 import com.ruyCorp.dot.controller.dto.Tag.TagCreationDto;
 import com.ruyCorp.dot.controller.dto.Tag.TagSyncTransactionDto;
 import com.ruyCorp.dot.repository.TagRepository;
-import com.ruyCorp.dot.repository.UserRepository;
 import com.ruyCorp.dot.repository.entity.Tag;
 import com.ruyCorp.dot.repository.entity.Transaction;
 import com.ruyCorp.dot.repository.entity.User;
@@ -14,6 +13,7 @@ import com.ruyCorp.dot.service.exception.Tag.TagAlreadyExistsException;
 import com.ruyCorp.dot.service.exception.Tag.TagNotFoundException;
 import com.ruyCorp.dot.service.exception.Tag.TagSyncTransactionNoPermissionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -72,7 +72,17 @@ public class TagService {
 
   }
 
-  public List<Tag> listTags () {}
+  public List<Tag> listTags (Pageable pageable) {
+    return this.tagRepository.listWithPages(pageable).getContent();
+  }
+
+  public void deleteTag(Integer id, String username) {
+
+    Tag tag = this.getTagById(id);
+    User user = this.userService.findByUsername(username);
+
+
+  }
 
   public void userHavePermission(Integer userId, Transaction transaction) throws TagSyncTransactionNoPermissionException {
     if(!Objects.equals(transaction.getUser().getId(), userId)) {

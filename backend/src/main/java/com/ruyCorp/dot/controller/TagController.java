@@ -10,13 +10,13 @@ import com.ruyCorp.dot.service.exception.NoPermissionException;
 import com.ruyCorp.dot.service.exception.Tag.TagSyncTransactionNoPermissionException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/tag")
@@ -49,5 +49,19 @@ public class TagController {
     return ResponseEntity.status(HttpStatus.OK).body(new MessageDto("Tag vinculada com sucesso!"));
   }
 
+  @GetMapping
+  public ResponseEntity<List<TagDto>> listTags(Pageable pageable) {
+
+    List<Tag> tags = this.tagService.listTags(pageable);
+
+    return ResponseEntity.status(HttpStatus.OK).body(tags.stream().map(TagDto::fromEntity).toList());
+
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<MessageDto> deleteTag(@PathVariable Integer id) {
+
+
+  }
 
 }
