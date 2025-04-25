@@ -12,9 +12,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
-@AutoConfigureMockMvc
-@SpringBootTest
-@ActiveProfiles("test")
 public class CreateUser {
 
   public static UserCreationDto badPassword() {
@@ -68,7 +65,6 @@ public class CreateUser {
 
   }
 
-  @DisplayName("Cria um novo usuário")
   public static String createUserRequest(MockMvc mockMvc) throws Exception {
     ObjectMapper  objectMapper = new ObjectMapper();
     UserCreationDto mockedUserCreate = validUser();
