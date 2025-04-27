@@ -17,6 +17,7 @@ services:
       - DB_USER=root
       - DB_PASSWORD=root
       - FRONTEND_URL=http://localhost:3000
+      - JWT_SECRET=blablablablatestes
     networks:
       - app_network
 
