@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -16,7 +17,19 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
 
   Page<Transaction> findAllByUser(User user, Pageable pageable);
 
-  @Query("SELECT u FROM Transactions u WHERE MONTH(u.created_at) = :mes AND YEAR(u.created_at) = :ano")
+  @Query("SELECT t FROM Transaction t WHERE MONTH(t.createdAt) = :mes AND YEAR(t.createdAt) = :ano")
   List<Transaction> findByMesEAno(@Param("mes") int mes, @Param("ano") int ano);
 
+  @Query("""
+    SELECT t FROM Transaction t
+    WHERE t.user = :user
+    AND (:dataInicio IS NULL OR t.createdAt >= :dataInicio)
+    AND (:dataFim IS NULL OR t.createdAt <= :dataFim)
+    """)
+  Page<Transaction> findByUserAndOptionalData(
+      @Param("user") User user,
+      @Param("dataInicio") LocalDateTime dataInicio,
+      @Param("dataFim") LocalDateTime dataFim,
+      Pageable pageable
+  );
 }

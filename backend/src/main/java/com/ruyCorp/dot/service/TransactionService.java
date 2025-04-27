@@ -1,16 +1,19 @@
 package com.ruyCorp.dot.service;
 
-import com.ruyCorp.dot.controller.dto.Transaction.TransactionDto;
+import com.ruyCorp.dot.controller.dto.Transaction.CreateTransactionDto;
+import com.ruyCorp.dot.controller.dto.Transaction.EditTransactionDto;
 import com.ruyCorp.dot.repository.TransactionRepository;
 import com.ruyCorp.dot.repository.entity.Transaction;
 import com.ruyCorp.dot.repository.entity.User;
 import com.ruyCorp.dot.service.exception.InvalidFieldsException;
 import com.ruyCorp.dot.service.exception.NoPermissionException;
+import com.ruyCorp.dot.service.exception.NotFound.NotFoundException;
 import com.ruyCorp.dot.service.exception.NotFound.TransactionNotFoundException;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,30 +28,44 @@ public class TransactionService {
     this.userService = userService;
   }
 
-  public List<Transaction> listTransactions(String username, Integer page) {
+  public Double countTransactionValues(List<Transaction> transactions) {
+    return transactions.stream()
+        .map(Transaction::getAmount)
+        .reduce(0d, Double::sum);
+  }
 
-    Pageable pageable = PageRequest.of(page, 10);
+  public List<Transaction> listTransactions(String username, Pageable pageable, LocalDateTime dataInit, LocalDateTime dataFim) {
 
     User user = userService.findByUsername(username);
 
-    return this.transactionRepository.findAllByUser(user, pageable).getContent();
+    Page<Transaction> transactions = this.transactionRepository.findByUserAndOptionalData(user, dataInit, dataFim, pageable);
+
+    return transactions.getContent();
 
   }
 
-  public Transaction newTransaction(String username, TransactionDto dto)
+  public Transaction newTransaction(String username, CreateTransactionDto dto)
       throws InvalidFieldsException {
 
-    if (!Objects.equals(dto.type(), "receita") && !Objects.equals(dto.type(), "despesa")) {
-      throw new InvalidFieldsException("A transação só pode ser do tipo despesa ou receita.");
-    }
-
-    Transaction transaction = new Transaction(dto);
-
+    Transaction transaction = new Transaction();
     User user = this.userService.findByUsername(username);
 
+    transaction.setName(dto.name());
+    transaction.setAmount(dto.amount());
     transaction.setUser(user);
 
     return this.transactionRepository.save(transaction);
+
+  }
+
+  public Transaction getTransactionByIdAndUsername(Integer id, String username) throws TransactionNotFoundException, NoPermissionException {
+    Transaction transaction = this.getTransactionById(id);
+
+    if (!Objects.equals(transaction.getUser().getUsername(), username)) {
+      throw new NoPermissionException();
+    }
+
+    return transaction;
 
   }
 
@@ -58,9 +75,9 @@ public class TransactionService {
   }
 
   public Transaction editTransaction(
-      TransactionDto dto, Integer id, String username) throws NoPermissionException {
+      EditTransactionDto dto, String username) throws NoPermissionException {
 
-    Transaction transaction = getTransactionById(id);
+    Transaction transaction = getTransactionById(dto.id());
     User user = this.userService.findByUsername(username);
 
     this.userHavePermission(user, transaction);
@@ -68,11 +85,11 @@ public class TransactionService {
     if(dto.amount() != null) {
       transaction.setAmount(dto.amount());
     }
-    if(dto.type() != null) {
-      transaction.setType(dto.type());
+    if(dto.name() != null) {
+      transaction.setName(dto.name());
     }
 
-    return null;
+    return this.transactionRepository.save(transaction);
 
   }
 
@@ -82,19 +99,13 @@ public class TransactionService {
     }
   }
 
-  public void deleteTransaction(Integer id, String username) throws NoPermissionException {
+  public void deleteTransaction(Integer id, String username) throws NoPermissionException, NotFoundException {
 
     User user = this.userService.findByUsername(username);
 
     Transaction transaction = this.getTransactionById(id);
 
     this.userHavePermission(user, transaction);
-
-    if(transaction.getType().equals("receita")) {
-      user.decrementBalance(-Math.abs(transaction.getAmount()));
-    } else {
-      user.incrementBalance(Math.abs(transaction.getAmount()));
-    }
 
     this.transactionRepository.delete(transaction);
 

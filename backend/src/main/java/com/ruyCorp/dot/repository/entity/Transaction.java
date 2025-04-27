@@ -1,12 +1,13 @@
 package com.ruyCorp.dot.repository.entity;
 
-import com.ruyCorp.dot.controller.dto.Transaction.TransactionDto;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -22,19 +23,21 @@ public class Transaction {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
-  // Despesa ou receita.
-  String type;
-  Double amount;
+  private String name;
+
+  private Double amount;
 
   @CreationTimestamp
-  LocalDate created_at;
+  @Column(name = "created_at", updatable = false)
+  private LocalDateTime createdAt;
 
   @UpdateTimestamp
-  LocalDate updated_at;
+  @Column(name = "updated_at")
+  private LocalDateTime updatedAt;
 
   @ManyToOne(optional = false)
   @JoinColumn(name = "user_id")
-  User user;
+  private User user;
 
   @ManyToMany
   @JoinTable(
@@ -42,11 +45,8 @@ public class Transaction {
       joinColumns = @JoinColumn(name = "transaction_id"),
       inverseJoinColumns = @JoinColumn(name = "tag_id")
   )
-  private List<Tag> tags;
-
-  public Transaction (TransactionDto transactionDto) {
-    this.setType(transactionDto.type());
-    this.setAmount(transactionDto.amount());
-  }
+  @Builder.Default
+  @JsonManagedReference
+  private List<Tag> tags = new ArrayList<>();
 
 }

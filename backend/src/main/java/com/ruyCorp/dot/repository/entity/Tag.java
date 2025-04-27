@@ -1,10 +1,18 @@
 package com.ruyCorp.dot.repository.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Table(name = "tags")
 public class Tag {
 
@@ -14,28 +22,14 @@ public class Tag {
 
   private String name;
 
+  private String color;
+
   @ManyToOne(optional = false)
   @JoinColumn(name = "user_id")
   private User user;
 
   @ManyToMany(mappedBy = "tags")
-  private List<Transaction> transactions;
-
-  public Tag() {};
-
-  public Integer getId() { return id; }
-
-  public void setId(Integer id) { this.id = id; }
-
-  public String getName() { return name; }
-
-  public void setName(String name) { this.name = name; }
-
-  public User getUser() { return user; }
-
-  public void setUser(User user) { this.user = user; }
-
-  public List<Transaction> getTransactions() { return transactions; }
-
-  public void setTransactions(List<Transaction> transactions) { this.transactions = transactions; }
+  @Builder.Default
+  @JsonBackReference
+  private List<Transaction> transactions = new ArrayList<>();
 }
