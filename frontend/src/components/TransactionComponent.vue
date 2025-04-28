@@ -1,9 +1,11 @@
 <template>
   <article>
-    <section style="display: flex; align-items: center; gap: 8px;">
+    <section>
       <h2>{{ props.name }}</h2>
-      <button @click="handleDelete">Apagar</button>
-      <button @click="handleEdit">Editar</button>
+      <div class="buttons">
+        <button class="edit-button" @click="handleEdit">Editar</button>
+        <button class="delete-button" @click="handleDelete">Apagar</button>
+      </div>
     </section>
 
     <p>R$ {{ props.amount }}</p>
@@ -64,3 +66,89 @@ const handleEdit = async () => {
   // Em breve 😎
 }
 </script>
+
+<style scoped>
+
+article {
+  background-color: var(--bg1);
+  padding: 1rem;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 300px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  color: var(--c5);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+article:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+h2 {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--c5);
+  margin: 0;
+}
+
+p {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: var(--c5);
+  margin: 0;
+}
+
+small {
+  font-size: 0.9rem;
+  color: var(--c5);
+}
+
+.buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+button {
+  background-color: var(--bg4);
+  border: none;
+  color: white;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: var(--bg3);
+}
+
+/* Estilo específico para os botões de apagar e editar */
+.delete-button {
+  background-color: #dc3545;
+}
+
+.delete-button:hover {
+  background-color: #bd2130;
+}
+
+.edit-button {
+  background-color: #28a745;
+}
+
+.edit-button:hover {
+  background-color: #218838;
+}
+
+</style>

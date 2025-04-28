@@ -90,7 +90,7 @@ public class TagService {
   }
 
   public List<Tag> listTags (Pageable pageable) {
-    return this.tagRepository.listWithPages(pageable).getContent();
+    return this.tagRepository.findAll(pageable).getContent();
   }
 
   public void deleteTag(Integer id, String username) throws TagNotBelongsUserException {
