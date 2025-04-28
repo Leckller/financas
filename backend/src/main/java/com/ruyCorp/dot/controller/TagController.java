@@ -8,6 +8,7 @@ import com.ruyCorp.dot.repository.entity.Tag;
 import com.ruyCorp.dot.service.TagService;
 import com.ruyCorp.dot.service.exception.MessageDto;
 import com.ruyCorp.dot.service.exception.NoPermissionException;
+import com.ruyCorp.dot.service.exception.Tag.MaxTagsTransactionsExceptions;
 import com.ruyCorp.dot.service.exception.Tag.TagNotBelongsUserException;
 import com.ruyCorp.dot.service.exception.Tag.TagSyncTransactionNoPermissionException;
 import jakarta.validation.Valid;
@@ -43,12 +44,12 @@ public class TagController {
 
   @PostMapping("/sync")
   public ResponseEntity<MessageDto> syncTag(@Valid @RequestBody TagSyncTransactionDto dto)
-      throws TagSyncTransactionNoPermissionException, NoPermissionException {
+      throws TagSyncTransactionNoPermissionException, NoPermissionException, MaxTagsTransactionsExceptions {
 
     String username = SecurityContextHolder.getContext().getAuthentication().getName();
-    this.tagService.syncTagTransaction(dto, username);
+    MessageDto syncTagTransaction = this.tagService.syncTagTransaction(dto, username);
 
-    return ResponseEntity.status(HttpStatus.OK).body(new MessageDto("Tag vinculada com sucesso!"));
+    return ResponseEntity.status(HttpStatus.OK).body(syncTagTransaction);
   }
 
   @GetMapping

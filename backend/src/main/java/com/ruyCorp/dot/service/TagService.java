@@ -4,16 +4,16 @@ import com.ruyCorp.dot.controller.dto.Tag.TagCreationDto;
 import com.ruyCorp.dot.controller.dto.Tag.TagEditDto;
 import com.ruyCorp.dot.controller.dto.Tag.TagSyncTransactionDto;
 import com.ruyCorp.dot.repository.TagRepository;
+import com.ruyCorp.dot.repository.TransactionRepository;
 import com.ruyCorp.dot.repository.entity.Tag;
 import com.ruyCorp.dot.repository.entity.Transaction;
 import com.ruyCorp.dot.repository.entity.User;
+import com.ruyCorp.dot.service.exception.MessageDto;
 import com.ruyCorp.dot.service.exception.NoPermissionException;
 import com.ruyCorp.dot.service.exception.NotFound.TransactionNotFoundException;
 import com.ruyCorp.dot.service.exception.NotFound.UserNotFoundException;
-import com.ruyCorp.dot.service.exception.Tag.TagAlreadyExistsException;
-import com.ruyCorp.dot.service.exception.Tag.TagNotBelongsUserException;
-import com.ruyCorp.dot.service.exception.Tag.TagNotFoundException;
-import com.ruyCorp.dot.service.exception.Tag.TagSyncTransactionNoPermissionException;
+import com.ruyCorp.dot.service.exception.Tag.*;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,12 +26,14 @@ import java.util.Optional;
 public class TagService {
 
   private final TagRepository tagRepository;
+  private final TransactionRepository transactionRepository;
   private final UserService userService;
   private final TransactionService transactionService;
 
   @Autowired
-  public TagService(TagRepository tagRepository, UserService userService, TransactionService transactionService) {
+  public TagService(TagRepository tagRepository, TransactionRepository transactionRepository, UserService userService, TransactionService transactionService) {
     this.tagRepository = tagRepository;
+    this.transactionRepository = transactionRepository;
     this.userService = userService;
     this.transactionService = transactionService;
   }
@@ -58,20 +60,33 @@ public class TagService {
 
   }
 
-  public void syncTagTransaction(TagSyncTransactionDto dto, String username)
-      throws NoPermissionException, TagNotFoundException, UserNotFoundException, TransactionNotFoundException, TagSyncTransactionNoPermissionException {
+  @Transactional
+  public MessageDto syncTagTransaction(TagSyncTransactionDto dto, String username)
+      throws NoPermissionException, TagNotFoundException, UserNotFoundException, TransactionNotFoundException, TagSyncTransactionNoPermissionException, MaxTagsTransactionsExceptions {
+
+    Tag tag = this.getTagById(dto.tagId());
+
+    Transaction transaction = this.transactionService.getTransactionById(dto.transactionId());
+
+    if (transaction.getTags().size() > 5) {
+      throw new MaxTagsTransactionsExceptions();
+    }
+
+    if (transaction.getTags().contains(tag)) {
+      transaction.getTags().remove(tag);
+      transactionRepository.save(transaction);
+      return new MessageDto("Transação desvinculada da tag com sucesso.");
+    }
 
     User user = this.userService.findByUsername(username);
-    Tag tag = this.getTagById(dto.tagId());
-    Transaction transaction = this.transactionService.getTransactionById(dto.tagId());
 
     transactionService.userHavePermission(user, transaction);
     userHavePermission(user.getId(), transaction);
 
-    tag.getTransactions().add(transaction);
+    transaction.getTags().add(tag);
+    transactionRepository.save(transaction);
 
-    this.tagRepository.save(tag);
-
+    return new MessageDto("Transação vinculada à tag com sucesso.");
   }
 
   public Tag editTag(Integer tagId, TagEditDto dto, String username) throws TagNotBelongsUserException {
