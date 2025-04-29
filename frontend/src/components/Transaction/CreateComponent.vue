@@ -4,11 +4,13 @@
 
 <script setup>
 import createTransaction from '@/service/Transaction/createTransaction'
+import { tagStore } from '@/stores/tag'
 import { transactionStore } from '@/stores/transaction'
 import Swal from 'sweetalert2'
 import { reactive } from 'vue'
 
 const transaction = transactionStore()
+const tagBox = tagStore()
 
 const form = reactive({
   name: '',
@@ -29,6 +31,9 @@ const handleCreateTransaction = async () => {
         <button type="button" id="btn-income" class="swal2-confirm btn swal2-styled" style="background-color: #28a745;">Receita</button>
         <button type="button" id="btn-expense" class="swal2-confirm btn swal2-styled" style="background-color: #dc3545;">Despesa</button>
       </div>
+      <div id="swal-form-add-tag">
+        <button type="button" id="btn-add-tag" class="swal2-confirm btn swal2-styled">Adicionar Tag</button>
+      </div>
     `,
     focusConfirm: false,
     showCancelButton: true,
@@ -37,6 +42,8 @@ const handleCreateTransaction = async () => {
     didOpen: () => {
       const incomeBtn = document.getElementById('btn-income')
       const expenseBtn = document.getElementById('btn-expense')
+      const addTagBtn = document.getElementById('btn-add-tag')
+      const addTagDiv = document.getElementById('swal-form-add-tag')
 
       incomeBtn.addEventListener('click', () => {
         transactionType = 'income'
@@ -50,7 +57,31 @@ const handleCreateTransaction = async () => {
         incomeBtn.style.opacity = '0.5'
       })
 
-      // Deixa o botão receita como selecionado inicialmente
+      // TAG
+      const selectTags = document.createElement('select')
+      selectTags.classList.add('tag-select')
+
+      tagBox.tags.forEach(t => {
+        const tagColor = document.createElement('span')
+        tagColor.classList.add('tag-span')
+        tagColor.style.backgroundColor = t.color
+        tagColor.textContent = 'a'
+
+        const tag = document.createElement('option')
+        tag.value = t.name
+        tag.textContent = t.name
+        tag.classList.add('tag-option')
+        tag.appendChild(tagColor)
+
+        selectTags.appendChild(tag)
+      })
+
+      addTagDiv.appendChild(selectTags)
+
+      addTagBtn.addEventListener('click', () => {
+        console.log(tagBox.tags)
+      })
+
       document.getElementById('btn-income').style.opacity = '1'
       document.getElementById('btn-expense').style.opacity = '0.5'
     },
@@ -94,13 +125,13 @@ const handleCreateTransaction = async () => {
 <style>
 
 .swal-form-fields {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    overflow-x: hidden;
-    gap: 8px;
-    width: 100%;
-  }
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  overflow-x: hidden;
+  gap: 8px;
+  width: 100%;
+}
 
 .swal-form-type {
   display: flex;
@@ -112,10 +143,15 @@ const handleCreateTransaction = async () => {
 .swal-form-fields input {
   width: 100%;
   margin: 0;
+  outline: none;
 }
 
 .swal-form-type button {
   width: 100%;
+}
+
+#btn-add-tag {
+  background-color: var(--c3);
 }
 
 @media (max-width: 315px) {

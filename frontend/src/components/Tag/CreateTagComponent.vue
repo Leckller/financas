@@ -3,12 +3,12 @@
 </template>
 
 <script setup>
-import createTransaction from '@/service/Transaction/createTransaction'
-import { transactionStore } from '@/stores/transaction'
+import createTag from '@/service/Tag/createTag'
+import { tagStore } from '@/stores/tag'
 import Swal from 'sweetalert2'
 import { reactive } from 'vue'
 
-const transaction = transactionStore()
+const tagBox = tagStore()
 
 const form = reactive({
   name: '',
@@ -43,10 +43,10 @@ const handleCreateTag = async () => {
 
     preConfirm: () => {
       const name = document.getElementById('swal-input-name').value
-      const color = parseFloat(document.getElementById('swal-input-color').value)
+      const color = document.getElementById('swal-input-color').value
 
       if (!name) {
-        Swal.showValidationMessage('O nome da transação é obrigatório.')
+        Swal.showValidationMessage('O nome da tag é obrigatório.')
         return
       }
 
@@ -56,10 +56,13 @@ const handleCreateTag = async () => {
 
   if (formValues) {
     form.name = formValues.name
-    form.amount = formValues.amount
-    const addTransaction = await createTransaction({ name: formValues.name, amount: formValues.amount })
-    transaction.addTransaction(addTransaction)
-    transaction.setBalance(transaction.balance + form.amount)
+    form.color = formValues.amount
+    try {
+      const tag = await createTag({ name: formValues.name, color: formValues.color })
+      tagBox.addTag(tag)
+    } catch (e) {
+      console.log(e)
+    }
   }
 }
 

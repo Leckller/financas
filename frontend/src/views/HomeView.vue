@@ -26,12 +26,17 @@ import { transactionStore } from '@/stores/transaction'
 import HeaderComponent from '../components/HeaderComponent.vue'
 import { onMounted } from 'vue'
 import CreateTagComponent from '@/components/Tag/CreateTagComponent.vue'
+import listTags from '@/service/Tag/listTags'
+import { tagStore } from '@/stores/tag'
 
 const transaction = transactionStore()
+const tagBox = tagStore()
 
 onMounted(async () => {
   try {
     const transactionsFetch = await listTransaction()
+    const tagsFetch = await listTags()
+    tagBox.addList(tagsFetch)
     transaction.addTransactionList(transactionsFetch.transactions)
     transaction.setBalance(transactionsFetch.balance)
   } catch (e) {
