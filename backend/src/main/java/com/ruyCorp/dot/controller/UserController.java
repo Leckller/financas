@@ -5,6 +5,7 @@ import com.ruyCorp.dot.controller.dto.User.UserCreationDto;
 import com.ruyCorp.dot.repository.entity.User;
 import com.ruyCorp.dot.service.TokenService;
 import com.ruyCorp.dot.service.UserService;
+import com.ruyCorp.dot.service.exception.AlreadyExists.UserAlreadyExistsException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,7 +27,7 @@ public class UserController {
   }
 
   @PostMapping
-  public ResponseEntity<TokenDto> createUser(@Valid @RequestBody UserCreationDto userCreationDto) {
+  public ResponseEntity<TokenDto> createUser(@Valid @RequestBody UserCreationDto userCreationDto) throws UserAlreadyExistsException {
 
     User user = this.userService.createUser(userCreationDto);
 

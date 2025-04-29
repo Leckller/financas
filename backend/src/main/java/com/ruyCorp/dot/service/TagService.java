@@ -128,7 +128,7 @@ public class TagService {
     }
   }
 
-  public void tagExists(String name) {
+  public void tagExists(String name) throws TagAlreadyExistsException {
     Optional<Tag> tag = this.tagRepository.findByName(name);
     if(tag.isPresent()) {
       throw new TagAlreadyExistsException();
