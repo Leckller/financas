@@ -10,6 +10,10 @@
 
     <p>R$ {{ props.amount }}</p>
     <small>{{ props.createdAt }}</small>
+
+    <section>
+      <TagComponent v-for="t in tags" :key="t.id" :color="t.color" :name="t.name"/>
+    </section>
   </article>
 </template>
 
@@ -18,6 +22,7 @@ import Swal from 'sweetalert2'
 import { defineProps } from 'vue'
 import deleteTransaction from '@/service/Transaction/deleteTransaction'
 import { transactionStore } from '@/stores/transaction'
+import TagComponent from './Tag/TagComponent.vue'
 
 const transaction = transactionStore()
 
@@ -26,7 +31,8 @@ const props = defineProps({
   name: String,
   amount: Number,
   createdAt: String,
-  updatedAt: String
+  updatedAt: String,
+  tags: Array
 })
 
 const handleDelete = async () => {

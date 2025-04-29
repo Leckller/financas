@@ -3,6 +3,7 @@
 </template>
 
 <script setup>
+import createTransactionWithTags from '@/service/Tag/createTransactionWithTags'
 import createTransaction from '@/service/Transaction/createTransaction'
 import { tagStore } from '@/stores/tag'
 import { transactionStore } from '@/stores/transaction'
@@ -14,7 +15,9 @@ const tagBox = tagStore()
 
 const form = reactive({
   name: '',
-  amount: 0
+  amount: 0,
+  tag: '',
+  tags: []
 })
 
 const handleCreateTransaction = async () => {
@@ -40,6 +43,11 @@ const handleCreateTransaction = async () => {
     confirmButtonText: 'Salvar',
 
     didOpen: () => {
+      form.name = ''
+      form.amount = 0
+      form.tag = {}
+      form.tags = []
+
       const incomeBtn = document.getElementById('btn-income')
       const expenseBtn = document.getElementById('btn-expense')
       const addTagBtn = document.getElementById('btn-add-tag')
@@ -61,17 +69,19 @@ const handleCreateTransaction = async () => {
       const selectTags = document.createElement('select')
       selectTags.classList.add('tag-select')
 
-      tagBox.tags.forEach(t => {
-        const tagColor = document.createElement('span')
-        tagColor.classList.add('tag-span')
-        tagColor.style.backgroundColor = t.color
-        tagColor.textContent = 'a'
+      selectTags.addEventListener('change', ({ target: { value } }) => {
+        const tag = tagBox.tags.filter(t => t.id === +value)[0]
+        form.tag = tag
+      })
 
+      selectTags.value = tagBox.tags[0].id
+      form.tag = tagBox.tags[0]
+
+      tagBox.tags.forEach(t => {
         const tag = document.createElement('option')
-        tag.value = t.name
+        tag.value = t.id
         tag.textContent = t.name
         tag.classList.add('tag-option')
-        tag.appendChild(tagColor)
 
         selectTags.appendChild(tag)
       })
@@ -79,7 +89,11 @@ const handleCreateTransaction = async () => {
       addTagDiv.appendChild(selectTags)
 
       addTagBtn.addEventListener('click', () => {
-        console.log(tagBox.tags)
+        if (form.tags.includes(form.tag.id)) {
+          return
+        }
+        form.tags.push(form.tag.id)
+        console.log(form.tags)
       })
 
       document.getElementById('btn-income').style.opacity = '1'
@@ -107,22 +121,40 @@ const handleCreateTransaction = async () => {
         amount = Math.abs(amount)
       }
 
-      return { name, amount }
+      return { name, amount, tags: form.tags }
     }
   })
 
   if (formValues) {
     form.name = formValues.name
     form.amount = formValues.amount
-    const addTransaction = await createTransaction({ name: formValues.name, amount: formValues.amount })
-    transaction.addTransaction(addTransaction)
-    transaction.setBalance(transaction.balance + form.amount)
+    try {
+      if (formValues.tags.length > 0) {
+        const addTransactionWithTags = await createTransactionWithTags({ name: formValues.name, amount: formValues.amount, tags: formValues.tags })
+        transaction.addTransaction(addTransactionWithTags)
+        transaction.setBalance(transaction.balance + form.amount)
+        return
+      }
+
+      const addTransaction = await createTransaction({ name: formValues.name, amount: formValues.amount })
+      transaction.addTransaction(addTransaction)
+      transaction.setBalance(transaction.balance + form.amount)
+    } catch (e) { console.log(e) }
   }
 }
 
 </script>
 
 <style>
+
+.tag-select {
+  padding: .625em 1.1em;
+  background-color: var(--c3);
+  color: white;
+  border-radius: .25em;
+  font-size: 1em;
+  border: 0;
+}
 
 .swal-form-fields {
   display: flex;

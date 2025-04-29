@@ -11,7 +11,7 @@
     <section id="home-transactions">
       <TransactionComponent
         v-for="t in transaction.transactions" :key="t.id"
-        :name="t.name" :amount="t.amount" :created-at="t.createdAt" :updated-at="t.updatedAt" :id="t.id"
+        :name="t.name" :amount="t.amount" :created-at="t.createdAt" :updated-at="t.updatedAt" :id="t.id" :tags="t.tags"
       />
     </section>
 
@@ -37,6 +37,7 @@ onMounted(async () => {
     const transactionsFetch = await listTransaction()
     const tagsFetch = await listTags()
     tagBox.addList(tagsFetch)
+    console.log(tagsFetch)
     transaction.addTransactionList(transactionsFetch.transactions)
     transaction.setBalance(transactionsFetch.balance)
   } catch (e) {
