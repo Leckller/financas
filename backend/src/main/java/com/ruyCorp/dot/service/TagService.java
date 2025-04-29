@@ -1,8 +1,10 @@
 package com.ruyCorp.dot.service;
 
+import com.ruyCorp.dot.controller.dto.Tag.CreateTransactionWithTagsDto;
 import com.ruyCorp.dot.controller.dto.Tag.TagCreationDto;
 import com.ruyCorp.dot.controller.dto.Tag.TagEditDto;
 import com.ruyCorp.dot.controller.dto.Tag.TagSyncTransactionDto;
+import com.ruyCorp.dot.controller.dto.Transaction.CreateTransactionDto;
 import com.ruyCorp.dot.repository.TagRepository;
 import com.ruyCorp.dot.repository.TransactionRepository;
 import com.ruyCorp.dot.repository.entity.Tag;
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -36,6 +39,35 @@ public class TagService {
     this.transactionRepository = transactionRepository;
     this.userService = userService;
     this.transactionService = transactionService;
+  }
+
+  public Transaction createTransactionWithTags(String username, CreateTransactionWithTagsDto dto) throws MaxTagsTransactionsExceptions, TagRepeatedException {
+    Transaction transaction = new Transaction();
+    User user = this.userService.findByUsername(username);
+
+    transaction.setName(dto.name());
+    transaction.setAmount(dto.amount());
+    transaction.setUser(user);
+
+    if(dto.tags() != null) {
+
+      if (dto.tags().size() > 5) {
+        throw new MaxTagsTransactionsExceptions();
+      }
+
+      HashSet<Integer> uniqueTags = new HashSet<>(dto.tags());
+      if (uniqueTags.size() != dto.tags().size()) {
+        throw new TagRepeatedException();
+      }
+
+      dto.tags().forEach(tagId -> {
+        Tag tag = this.getTagById(tagId);
+        transaction.getTags().add(tag);
+      });
+
+    }
+
+    return this.transactionRepository.save(transaction);
   }
 
   public Tag createTag(TagCreationDto dto, String username) throws TagAlreadyExistsException {

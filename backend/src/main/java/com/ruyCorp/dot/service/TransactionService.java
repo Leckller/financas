@@ -3,19 +3,25 @@ package com.ruyCorp.dot.service;
 import com.ruyCorp.dot.controller.dto.Transaction.CreateTransactionDto;
 import com.ruyCorp.dot.controller.dto.Transaction.EditTransactionDto;
 import com.ruyCorp.dot.repository.TransactionRepository;
+import com.ruyCorp.dot.repository.entity.Tag;
 import com.ruyCorp.dot.repository.entity.Transaction;
 import com.ruyCorp.dot.repository.entity.User;
 import com.ruyCorp.dot.service.exception.InvalidFieldsException;
+import com.ruyCorp.dot.service.exception.MessageDto;
 import com.ruyCorp.dot.service.exception.NoPermissionException;
 import com.ruyCorp.dot.service.exception.NotFound.NotFoundException;
 import com.ruyCorp.dot.service.exception.NotFound.TransactionNotFoundException;
+import com.ruyCorp.dot.service.exception.Tag.MaxTagsTransactionsExceptions;
+import com.ruyCorp.dot.service.exception.Tag.TagRepeatedException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Service
 public class TransactionService {
@@ -45,7 +51,7 @@ public class TransactionService {
   }
 
   public Transaction newTransaction(String username, CreateTransactionDto dto)
-      throws InvalidFieldsException {
+      throws MaxTagsTransactionsExceptions, InvalidFieldsException, TagRepeatedException {
 
     Transaction transaction = new Transaction();
     User user = this.userService.findByUsername(username);
@@ -55,7 +61,6 @@ public class TransactionService {
     transaction.setUser(user);
 
     return this.transactionRepository.save(transaction);
-
   }
 
   public Transaction getTransactionByIdAndUsername(Integer id, String username) throws TransactionNotFoundException, NoPermissionException {
