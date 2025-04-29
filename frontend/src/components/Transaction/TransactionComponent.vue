@@ -1,18 +1,17 @@
 <template>
-  <article>
-    <section>
-      <h2>{{ props.name }}</h2>
-      <div class="buttons">
-        <button class="edit-button" @click="handleEdit">Editar</button>
-        <button class="delete-button" @click="handleDelete">Apagar</button>
-      </div>
-    </section>
+  <article class="transaction-article">
+    <h2>{{ props.name }}</h2>
 
     <p>R$ {{ props.amount }}</p>
     <small>{{ props.createdAt }}</small>
 
-    <section>
+    <section class="transaction-tags">
       <TagComponent v-for="t in tags" :key="t.id" :color="t.color" :name="t.name"/>
+    </section>
+
+    <section class="transaction-buttons">
+      <button class="edit-button" @click="handleEdit">Editar</button>
+      <button class="delete-button" @click="handleDelete">Apagar</button>
     </section>
   </article>
 </template>
@@ -22,7 +21,7 @@ import Swal from 'sweetalert2'
 import { defineProps } from 'vue'
 import deleteTransaction from '@/service/Transaction/deleteTransaction'
 import { transactionStore } from '@/stores/transaction'
-import TagComponent from './Tag/TagComponent.vue'
+import TagComponent from '../Tag/TagComponent.vue'
 
 const transaction = transactionStore()
 
@@ -75,8 +74,9 @@ const handleEdit = async () => {
 
 <style scoped>
 
-article {
+.transaction-article {
   background-color: var(--bg1);
+  word-break: break-all;
   padding: 1rem;
   border-radius: 10px;
   width: 100%;
@@ -89,12 +89,18 @@ article {
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
-article:hover {
+.transaction-article:hover {
   transform: scale(1.02);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-section {
+.transaction-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.transaction-buttons {
   display: flex;
   align-items: center;
   gap: 16px;

@@ -19,8 +19,8 @@
 </template>
 
 <script setup>
-import CreateComponent from '@/components/Transaction/CreateComponent.vue'
-import TransactionComponent from '@/components/TransactionComponent.vue'
+import CreateComponent from '@/components/Transaction/CreateTransactionComponent.vue'
+import TransactionComponent from '@/components/Transaction/TransactionComponent.vue'
 import listTransaction from '@/service/Transaction/listTransactions'
 import { transactionStore } from '@/stores/transaction'
 import HeaderComponent from '../components/HeaderComponent.vue'
@@ -37,7 +37,6 @@ onMounted(async () => {
     const transactionsFetch = await listTransaction()
     const tagsFetch = await listTags()
     tagBox.addList(tagsFetch)
-    console.log(tagsFetch)
     transaction.addTransactionList(transactionsFetch.transactions)
     transaction.setBalance(transactionsFetch.balance)
   } catch (e) {

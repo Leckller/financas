@@ -126,19 +126,17 @@ const handleCreateTransaction = async () => {
   })
 
   if (formValues) {
-    form.name = formValues.name
-    form.amount = formValues.amount
     try {
       if (formValues.tags.length > 0) {
         const addTransactionWithTags = await createTransactionWithTags({ name: formValues.name, amount: formValues.amount, tags: formValues.tags })
         transaction.addTransaction(addTransactionWithTags)
-        transaction.setBalance(transaction.balance + form.amount)
+        transaction.setBalance(transaction.balance + formValues.amount)
         return
       }
 
       const addTransaction = await createTransaction({ name: formValues.name, amount: formValues.amount })
       transaction.addTransaction(addTransaction)
-      transaction.setBalance(transaction.balance + form.amount)
+      transaction.setBalance(transaction.balance + formValues.amount)
     } catch (e) { console.log(e) }
   }
 }
