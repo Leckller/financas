@@ -74,7 +74,7 @@ const handleCreateTransaction = async () => {
         form.tag = tag
       })
 
-      selectTags.value = tagBox.tags[0].id
+      selectTags.value = tagBox.tags[0]?.id
       form.tag = tagBox.tags[0]
 
       tagBox.tags.forEach(t => {
