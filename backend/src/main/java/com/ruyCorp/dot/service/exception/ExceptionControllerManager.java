@@ -36,7 +36,7 @@ public class ExceptionControllerManager {
   @ExceptionHandler()
   public ResponseEntity<MessageDto> handleAlreadyExists(AlreadyExistsException exception) {
     return ResponseEntity
-        .status(HttpStatus.FORBIDDEN)
+        .status(HttpStatus.BAD_REQUEST)
         .body(new MessageDto(exception.getMessage()));
   }
 

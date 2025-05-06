@@ -27,7 +27,7 @@ public class UserService implements UserDetailsService {
     this.tokenService = tokenService;
   }
 
-  public User createUser(UserCreationDto userCreationDto) {
+  public User createUser(UserCreationDto userCreationDto) throws UserAlreadyExistsException {
 
     this.userExists(userCreationDto.username(), userCreationDto.email());
 
@@ -46,7 +46,7 @@ public class UserService implements UserDetailsService {
 
   }
 
-  public void userExists(String username, String email) throws UsernameNotFoundException  {
+  public void userExists(String username, String email) throws UsernameNotFoundException, UserAlreadyExistsException {
     if (this.userRepository.findByUsername(username).isPresent() || this.userRepository.findByEmail(email).isPresent()) {
         throw new UserAlreadyExistsException();
     }

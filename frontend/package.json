@@ -12,7 +12,8 @@
     "pinia": "^3.0.2",
     "sweetalert2": "^11.19.1",
     "vue": "^3.2.13",
-    "vue-router": "^4.0.3"
+    "vue-router": "^4.0.3",
+    "vue-select": "^4.0.0-beta.6"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",

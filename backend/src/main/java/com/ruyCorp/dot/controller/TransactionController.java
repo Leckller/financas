@@ -9,6 +9,8 @@ import com.ruyCorp.dot.service.TransactionService;
 import com.ruyCorp.dot.service.exception.InvalidFieldsException;
 import com.ruyCorp.dot.service.exception.MessageDto;
 import com.ruyCorp.dot.service.exception.NoPermissionException;
+import com.ruyCorp.dot.service.exception.Tag.MaxTagsTransactionsExceptions;
+import com.ruyCorp.dot.service.exception.Tag.TagRepeatedException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -64,7 +66,7 @@ public class TransactionController {
 
   @PostMapping
   public ResponseEntity<TransactionDto> newTransaction(
-      @Valid @RequestBody CreateTransactionDto dto) throws InvalidFieldsException {
+      @Valid @RequestBody CreateTransactionDto dto) throws InvalidFieldsException, MaxTagsTransactionsExceptions, TagRepeatedException {
 
     String username = SecurityContextHolder.getContext().getAuthentication().getName();
     Transaction transaction = this.transactionService.newTransaction(username, dto);
