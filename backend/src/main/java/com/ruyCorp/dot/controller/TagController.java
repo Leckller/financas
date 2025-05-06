@@ -1,15 +1,15 @@
 package com.ruyCorp.dot.controller;
 
-import com.ruyCorp.dot.controller.dto.Tag.TagCreationDto;
-import com.ruyCorp.dot.controller.dto.Tag.TagDto;
-import com.ruyCorp.dot.controller.dto.Tag.TagEditDto;
-import com.ruyCorp.dot.controller.dto.Tag.TagSyncTransactionDto;
+import com.ruyCorp.dot.controller.dto.Tag.*;
+import com.ruyCorp.dot.controller.dto.Transaction.CreateTransactionDto;
+import com.ruyCorp.dot.controller.dto.Transaction.TransactionDto;
 import com.ruyCorp.dot.repository.entity.Tag;
+import com.ruyCorp.dot.repository.entity.Transaction;
 import com.ruyCorp.dot.service.TagService;
+import com.ruyCorp.dot.service.exception.InvalidFieldsException;
 import com.ruyCorp.dot.service.exception.MessageDto;
 import com.ruyCorp.dot.service.exception.NoPermissionException;
-import com.ruyCorp.dot.service.exception.Tag.TagNotBelongsUserException;
-import com.ruyCorp.dot.service.exception.Tag.TagSyncTransactionNoPermissionException;
+import com.ruyCorp.dot.service.exception.Tag.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -31,9 +31,21 @@ public class TagController {
     this.tagService = tagService;
   }
 
+  @PostMapping("/transaction")
+  public ResponseEntity<TransactionDto> newTransactionWithTags(
+      @Valid @RequestBody CreateTransactionWithTagsDto dto) throws MaxTagsTransactionsExceptions, TagRepeatedException {
+
+    String username = SecurityContextHolder.getContext().getAuthentication().getName();
+    Transaction transaction = this.tagService.createTransactionWithTags(username, dto);
+
+    return ResponseEntity
+        .status(HttpStatus.CREATED)
+        .body(TransactionDto.fromEntity(transaction));
+
+  }
 
   @PostMapping
-  public ResponseEntity<TagDto> createTag(@Valid @RequestBody TagCreationDto body) {
+  public ResponseEntity<TagDto> createTag(@Valid @RequestBody TagCreationDto body) throws TagAlreadyExistsException {
 
     String username = SecurityContextHolder.getContext().getAuthentication().getName();
     Tag tag = this.tagService.createTag(body, username);
@@ -43,12 +55,12 @@ public class TagController {
 
   @PostMapping("/sync")
   public ResponseEntity<MessageDto> syncTag(@Valid @RequestBody TagSyncTransactionDto dto)
-      throws TagSyncTransactionNoPermissionException, NoPermissionException {
+      throws TagSyncTransactionNoPermissionException, NoPermissionException, MaxTagsTransactionsExceptions {
 
     String username = SecurityContextHolder.getContext().getAuthentication().getName();
-    this.tagService.syncTagTransaction(dto, username);
+    MessageDto syncTagTransaction = this.tagService.syncTagTransaction(dto, username);
 
-    return ResponseEntity.status(HttpStatus.OK).body(new MessageDto("Tag vinculada com sucesso!"));
+    return ResponseEntity.status(HttpStatus.OK).body(syncTagTransaction);
   }
 
   @GetMapping

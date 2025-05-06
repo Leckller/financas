@@ -1,6 +1,6 @@
 <template>
   <main class="">
-    <h1>Login</h1>
+    <h1>Register</h1>
 
     <form @submit.prevent="handleLogin">
       <section>

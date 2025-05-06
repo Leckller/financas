@@ -1,39 +1,42 @@
 <template>
-  <header>
-    <h1>DOT FINANCE</h1>
-    <p>Balance: {{ transaction.balance }}</p>
-  </header>
+  <HeaderComponent :balance="transaction.balance" />
 
   <main>
-    <button @click="handleCreateTransaction">Nova Transação</button>
 
-    <section>
+    <section id="home-buttons">
+      <CreateComponent />
+      <CreateTagComponent />
+    </section>
+
+    <section id="home-transactions">
       <TransactionComponent
         v-for="t in transaction.transactions" :key="t.id"
-        :name="t.name" :amount="t.amount" :created-at="t.createdAt" :updated-at="t.updatedAt" :id="t.id"
+        :name="t.name" :amount="t.amount" :created-at="t.createdAt" :updated-at="t.updatedAt" :id="t.id" :tags="t.tags"
       />
     </section>
+
   </main>
 </template>
 
 <script setup>
-import TransactionComponent from '@/components/TransactionComponent.vue'
-import createTransaction from '@/service/Transaction/createTransaction'
+import CreateComponent from '@/components/Transaction/CreateTransactionComponent.vue'
+import TransactionComponent from '@/components/Transaction/TransactionComponent.vue'
 import listTransaction from '@/service/Transaction/listTransactions'
 import { transactionStore } from '@/stores/transaction'
-import Swal from 'sweetalert2'
-import { onMounted, reactive } from 'vue'
+import HeaderComponent from '../components/HeaderComponent.vue'
+import { onMounted } from 'vue'
+import CreateTagComponent from '@/components/Tag/CreateTagComponent.vue'
+import listTags from '@/service/Tag/listTags'
+import { tagStore } from '@/stores/tag'
 
 const transaction = transactionStore()
-
-const form = reactive({
-  name: '',
-  amount: 0
-})
+const tagBox = tagStore()
 
 onMounted(async () => {
   try {
     const transactionsFetch = await listTransaction()
+    const tagsFetch = await listTags()
+    tagBox.addList(tagsFetch)
     transaction.addTransactionList(transactionsFetch.transactions)
     transaction.setBalance(transactionsFetch.balance)
   } catch (e) {
@@ -41,36 +44,58 @@ onMounted(async () => {
   }
 })
 
-const handleCreateTransaction = async () => {
-  const { value: formValues } = await Swal.fire({
-    title: 'Nova Transação',
-    html:
-      '<input id="swal-input-name" class="swal2-input" placeholder="Nome da transação">' +
-      '<input id="swal-input-amount" type="number" class="swal2-input" placeholder="Valor">',
-
-    focusConfirm: false,
-    showCancelButton: true,
-    confirmButtonText: 'Salvar',
-
-    preConfirm: () => {
-      const name = document.getElementById('swal-input-name').value
-      const amount = parseFloat(document.getElementById('swal-input-amount').value)
-
-      if (!name || isNaN(amount)) {
-        Swal.showValidationMessage('Preencha todos os campos corretamente.')
-        return
-      }
-
-      return { name, amount }
-    }
-  })
-
-  if (formValues) {
-    form.name = formValues.name
-    form.amount = formValues.amount
-    const addTransaction = await createTransaction({ name: formValues.name, amount: formValues.amount })
-    transaction.addTransaction(addTransaction)
-    transaction.setBalance(transaction.balance + form.amount)
-  }
-}
 </script>
+
+<style>
+
+main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  gap: 32px;
+}
+
+#home-buttons {
+
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+  gap: 16px;
+
+}
+
+#home-buttons > button {
+  display: block;
+  padding: 1rem;
+  font-size: 1rem;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+main > button:hover {
+  background-color: #2980b9;
+}
+
+#home-transactions {
+
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 100%;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+
+}
+
+</style>
