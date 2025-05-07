@@ -58,6 +58,16 @@ public class User implements UserDetails {
   @Builder.Default
   private List<Transaction> transactions = new ArrayList<>();
 
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonManagedReference
+  @Builder.Default
+  private List<Projection> projections = new ArrayList<>();
+
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonManagedReference
+  @Builder.Default
+  private List<ProjectedTransaction> projectedTransactions = new ArrayList<>();
+
   public User(UserCreationDto dto) {
     this.name = dto.name();
     this.email = dto.email();
