@@ -29,6 +29,8 @@ public class User implements UserDetails {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
+  private Double money;
+
   private Double budget;
 
   @Column(unique = true, nullable = false)
@@ -74,7 +76,7 @@ public class User implements UserDetails {
     this.password = dto.password();
     this.username = dto.username();
     this.role = "USER";
-    this.budget = 0.0;
+    this.money = 0.0;
   }
 
   @Override

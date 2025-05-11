@@ -2,6 +2,8 @@ package com.ruyCorp.dot.service;
 
 import com.ruyCorp.dot.controller.dto.Transaction.CreateTransactionDto;
 import com.ruyCorp.dot.controller.dto.Transaction.EditTransactionDto;
+import com.ruyCorp.dot.controller.dto.Transaction.TransactionDto;
+import com.ruyCorp.dot.controller.dto.Transaction.TransactionListDto;
 import com.ruyCorp.dot.repository.TransactionRepository;
 import com.ruyCorp.dot.repository.entity.Tag;
 import com.ruyCorp.dot.repository.entity.Transaction;
@@ -40,13 +42,13 @@ public class TransactionService {
         .reduce(0d, Double::sum);
   }
 
-  public List<Transaction> listTransactions(String username, Pageable pageable, LocalDateTime dataInit, LocalDateTime dataFim) {
+  public TransactionListDto listTransactions(String username, Pageable pageable, LocalDateTime dataInit, LocalDateTime dataFim) {
 
     User user = userService.findByUsername(username);
 
     Page<Transaction> transactions = this.transactionRepository.findByUserAndOptionalData(user, dataInit, dataFim, pageable);
 
-    return transactions.getContent();
+    return new TransactionListDto(transactions.getContent().stream().map(TransactionDto::fromEntity).toList(), user.getMoney());
 
   }
 
@@ -59,6 +61,8 @@ public class TransactionService {
     transaction.setName(dto.name());
     transaction.setAmount(dto.amount());
     transaction.setUser(user);
+
+    user.setMoney(user.getMoney() + transaction.getAmount());
 
     return this.transactionRepository.save(transaction);
   }
@@ -88,7 +92,9 @@ public class TransactionService {
     this.userHavePermission(user, transaction);
 
     if(dto.amount() != null) {
+      user.setMoney(user.getMoney() + (transaction.getAmount() * -1));
       transaction.setAmount(dto.amount());
+      user.setMoney(user.getMoney() + dto.amount());
     }
     if(dto.name() != null) {
       transaction.setName(dto.name());
@@ -111,6 +117,8 @@ public class TransactionService {
     Transaction transaction = this.getTransactionById(id);
 
     this.userHavePermission(user, transaction);
+
+    user.setMoney(user.getMoney() + (transaction.getAmount() * -1));
 
     this.transactionRepository.delete(transaction);
 
