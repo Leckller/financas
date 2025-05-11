@@ -6,4 +6,7 @@ public class NoPermissionException extends BadRequestException {
   public NoPermissionException() {
     super("Você não tem permissão para fazer isso.");
   }
+  public NoPermissionException(String message) {
+    super(message);
+  }
 }

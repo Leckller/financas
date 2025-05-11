@@ -1,5 +1,6 @@
 package com.ruyCorp.dot.repository.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -39,9 +40,10 @@ public class ProjectedTransaction {
   @JoinColumn(name = "user_id")
   private User user;
 
-  @ManyToOne(optional = false)
-  @JoinColumn(name = "projection_id")
-  private Projection projection;
+  @ManyToMany(mappedBy = "projectedTransactions")
+  @Builder.Default
+  @JsonBackReference
+  private List<Projection> projections = new ArrayList<>();
 
   @ManyToMany
   @JoinTable(

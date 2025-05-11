@@ -24,10 +24,15 @@ public class Projection {
 
   private Double meta;
 
-  @OneToMany(mappedBy = "projection", cascade = CascadeType.ALL, orphanRemoval = true)
-  @JsonManagedReference
+  @ManyToMany
+  @JoinTable(
+      name = "projection_projected_transactions",
+      joinColumns = @JoinColumn(name = "projection_id"),
+      inverseJoinColumns = @JoinColumn(name = "projected_transaction_id")
+  )
   @Builder.Default
-  private List<ProjectedTransaction> projectedTransaction = new ArrayList<>();
+  @JsonManagedReference
+  private List<ProjectedTransaction> projectedTransactions = new ArrayList<>();
 
   @ManyToOne(optional = false)
   @JoinColumn(name = "user_id")
