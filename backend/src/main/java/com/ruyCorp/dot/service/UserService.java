@@ -18,13 +18,11 @@ import org.springframework.stereotype.Service;
 public class UserService implements UserDetailsService {
 
   private final UserRepository userRepository;
-  private final TokenService  tokenService;
   private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
   @Autowired
-  public UserService(UserRepository userRepository, TokenService tokenService) {
+  public UserService(UserRepository userRepository) {
     this.userRepository = userRepository;
-    this.tokenService = tokenService;
   }
 
   public User createUser(UserCreationDto userCreationDto) throws UserAlreadyExistsException {

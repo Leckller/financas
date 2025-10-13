@@ -55,13 +55,11 @@ public class TransactionController {
 
     String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
-    List<Transaction> transactions = this.transactionService.listTransactions(username, pageable, dataInit, dataFim);
-
-    Double balance = this.transactionService.countTransactionValues(transactions);
+    TransactionListDto transactions = this.transactionService.listTransactions(username, pageable, dataInit, dataFim);
 
     return ResponseEntity
         .status(HttpStatus.OK)
-        .body(TransactionListDto.fromEntity(balance, transactions));
+        .body(transactions);
   }
 
   @PostMapping

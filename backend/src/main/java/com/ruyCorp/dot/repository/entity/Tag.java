@@ -32,4 +32,10 @@ public class Tag {
   @Builder.Default
   @JsonBackReference
   private List<Transaction> transactions = new ArrayList<>();
+
+  @ManyToMany(mappedBy = "tags")
+  @Builder.Default
+  @JsonBackReference
+  private List<ProjectedTransaction> projectedTransactions = new ArrayList<>();
+
 }

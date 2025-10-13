@@ -29,6 +29,8 @@ public class User implements UserDetails {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
+  private Double money;
+
   private Double budget;
 
   @Column(unique = true, nullable = false)
@@ -58,13 +60,23 @@ public class User implements UserDetails {
   @Builder.Default
   private List<Transaction> transactions = new ArrayList<>();
 
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonManagedReference
+  @Builder.Default
+  private List<Projection> projections = new ArrayList<>();
+
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonManagedReference
+  @Builder.Default
+  private List<ProjectedTransaction> projectedTransactions = new ArrayList<>();
+
   public User(UserCreationDto dto) {
     this.name = dto.name();
     this.email = dto.email();
     this.password = dto.password();
     this.username = dto.username();
     this.role = "USER";
-    this.budget = 0.0;
+    this.money = 0.0;
   }
 
   @Override
