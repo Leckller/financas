@@ -8,12 +8,97 @@ class ExpensesApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: MyHomePage());
+    return MaterialApp(
+      theme: ThemeData(
+        primarySwatch: Colors.lightGreen,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Color.fromRGBO(0, 208, 158, 1),
+          brightness: Brightness.light,
+        ),
+        fontFamily: "ChelseaMarket",
+      ),
+      home: MyHomePage(),
+    );
   }
 }
 
 class MyHomePageState extends State<MyHomePage> {
-  List<Transaction> transactions = [Transaction.newTransaction("title", 2.0.toStringAsFixed(2))];
+  List<Transaction> transactions = [];
+
+  TextEditingController titleControler = TextEditingController();
+  TextEditingController valueControler = TextEditingController();
+
+  void _submitModal() {
+    String title = titleControler.text;
+    double value =
+        double.tryParse(valueControler.text.replaceAll(',', '.')) ?? 0;
+
+    if (value == 0 || title.isEmpty) {
+      return;
+    }
+
+    Transaction newTransaction = Transaction.newTransaction(title, value);
+
+    setState(() {
+      transactions.add(newTransaction);
+    });
+
+    titleControler.clear();
+    valueControler.clear();
+
+    Navigator.of(context).pop();
+  }
+
+  void _deleteTransaction(String id) {
+    setState(() {
+      transactions.removeWhere((tr) => tr.id == id);
+    });
+  }
+
+  void _openTransactionModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => Container(
+        color: Colors.white,
+        width: double.infinity,
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          spacing: 8,
+          children: [
+            SizedBox(
+              width: double.infinity,
+              child: Text(
+                "Nova transação",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+              ),
+            ),
+            TextField(
+              controller: titleControler,
+              decoration: InputDecoration(labelText: "Título:"),
+              style: TextStyle(fontSize: 24),
+            ),
+            TextField(
+              controller: valueControler,
+              decoration: InputDecoration(labelText: "Valor R\$"),
+              keyboardType: TextInputType.numberWithOptions(),
+              style: TextStyle(fontSize: 24),
+            ),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => _submitModal(),
+                child: Text(
+                  "Lançar",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +126,13 @@ class MyHomePageState extends State<MyHomePage> {
                       Text("Bom dia", style: TextStyle(fontSize: 16)),
                     ],
                   ),
+                  Row(
+                    children: [
+                      Text(
+                        "Saldo: ${transactions.fold(0.0, (sum, t) => sum + t.value)}",
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -52,20 +144,50 @@ class MyHomePageState extends State<MyHomePage> {
               color: Colors.white,
               child: Column(
                 spacing: 10,
-                children: transactions
-                    .map((t) => Card(
-                      child: SizedBox(
-                        height: 80,
-                        child: Row(children: [
-                        Text(t.value, style: TextStyle(
-                        ),)
-                                            ]),
-                      )))
-                    .toList(),
+                children: transactions.isEmpty
+                    ? <Widget>[
+                        Image.asset("assets/images/waiting.png", height: 200),
+                      ]
+                    : transactions
+                          .map(
+                            (t) => Card(
+                              child: Container(
+                                height: 80,
+                                padding: EdgeInsets.all(16),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      t.value.toString(),
+                                      style: TextStyle(),
+                                    ),
+                                    Column(
+                                      children: [
+                                        Text(t.title),
+                                        Text(t.date.toString()),
+                                      ],
+                                    ),
+                                    IconButton(
+                                      onPressed: () => _deleteTransaction(t.id),
+                                      icon: Icon(Icons.delete),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          )
+                          .toList(),
               ),
             ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _openTransactionModal(context);
+        },
+        child: Icon(Icons.add),
       ),
     );
   }
