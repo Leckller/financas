@@ -6,6 +6,8 @@ class Day {
   final List<Transaction> transactions;
 
   Day({required this.title, required this.transactions});
+
+  double getTotal() => transactions.fold(0.0, (sum, t) => sum + t.value);
 }
 
 class Week {
@@ -81,7 +83,7 @@ class TransactionChart extends StatelessWidget {
   final List<Transaction> transactions;
   const TransactionChart({super.key, required this.transactions});
 
-  double getTotal() {
+  double getTotalWeek() {
     return transactions.fold(0.0, (sum, t) => sum + t.value);
   }
 
@@ -93,9 +95,23 @@ class TransactionChart extends StatelessWidget {
       height: 200,
       width: double.infinity,
       child: Row(
-        children: [
-          Column(children: [Container(color: Colors.red)]),
-        ],
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: week.days
+            .map(
+              (day) => Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 10,
+                    height: 160,
+                    color: Colors.blueGrey,
+                    child: Align( alignment: AlignmentGeometry.bottomEnd, child: Container(width: 10, height:  day.getTotal() / getTotalWeek() * 160 , color: Colors.red)),
+                  ),
+                  Text(day.title)
+                ],
+              ),
+            )
+            .toList(),
       ),
     );
   }
