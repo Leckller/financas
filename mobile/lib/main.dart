@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/components/transaction_chart.dart';
 import 'package:mobile/models/transaction.dart';
 
 void main() => runApp(ExpensesApp());
@@ -109,7 +110,7 @@ class MyHomePageState extends State<MyHomePage> {
           SliverToBoxAdapter(
             child: Container(
               padding: EdgeInsets.fromLTRB(16, 32, 16, 8),
-              height: 150,
+              height: 320,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -133,6 +134,7 @@ class MyHomePageState extends State<MyHomePage> {
                       ),
                     ],
                   ),
+                  TransactionChart(transactions: transactions)
                 ],
               ),
             ),
