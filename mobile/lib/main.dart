@@ -1,13 +1,23 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:mobile/screens/auth_page.dart';
+import 'package:mobile/utils/app_routes.dart';
 
 void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+  final bool isAndroid = true;
 
   @override
   Widget build(BuildContext context) {
-    return const CupertinoApp(
+    return isAndroid ? MaterialApp(
+      title: "Finanças",
+      home: AuthPage(),
+      routes: {
+        AppRoutes.AUTH: (ctx) => AuthPage()
+      },
+    ) : CupertinoApp(
       title: 'Cupertino App',
       home: CupertinoPageScaffold(
         navigationBar: CupertinoNavigationBar(
