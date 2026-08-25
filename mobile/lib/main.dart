@@ -12,13 +12,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return isAndroid ? MaterialApp(
-      title: "Finanças",
+      title: "Finanças App",
       home: AuthPage(),
       routes: {
         AppRoutes.AUTH: (ctx) => AuthPage()
       },
     ) : CupertinoApp(
-      title: 'Cupertino App',
+      title: 'Finanças App',
       home: CupertinoPageScaffold(
         navigationBar: CupertinoNavigationBar(
           middle: Text('Cupertino App Bar'),
